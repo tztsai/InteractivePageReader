@@ -16,6 +16,30 @@ details summary {
   visibility: hidden;
 }
 
+.foldable-content {
+  display: none;
+}
+
+.foldable-content.visible {
+  display: block;
+}
+
+.foldable-header {
+  cursor: pointer;
+}
+
+.foldable-header::before {
+  content: '\25B8'; /* Right-pointing triangle */
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 8px;
+  opacity: 0.5;
+}
+
+.foldable-header.unfolded::before {
+  content: '\25BE'; /* Down-pointing triangle */
+}
+
 /*---------------------------------------------------------------------------*/
 /*print*/
 

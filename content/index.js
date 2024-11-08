@@ -1,4 +1,3 @@
-
 var $ = document.querySelector.bind(document)
 
 var state = {
@@ -110,6 +109,29 @@ var update = (update) => {
   if (state.content.mathjax) {
     setTimeout(() => mj.render(), 60)
   }
+
+  !update && setTimeout(() => {
+    const headers = document.querySelectorAll('h2, h3, h4, h5, h6');
+    headers.forEach(header => {
+      header.classList.add('foldable-header');
+      const content = document.createElement('div');
+      content.classList.add('foldable-content');
+
+      let sibling = header.nextElementSibling;
+      while (sibling && (!/^H[1-6]$/.test(sibling.tagName) || sibling.tagName > header.tagName)) {
+        const nextSibling = sibling.nextElementSibling;
+        content.appendChild(sibling);
+        sibling = nextSibling;
+      }
+
+      header.insertAdjacentElement('afterend', content);
+
+      header.addEventListener('click', () => {
+        content.classList.toggle('visible');
+        header.classList.toggle('unfolded');
+      });
+    });
+  }, 80);
 }
 
 var render = (md) => {
