@@ -9,6 +9,7 @@ mkdir -p tmp
 
 # turndown.min.js
 npx rollup --config rollup.mjs --input turndown.mjs --file tmp/turndown.js
+npx browserify tmp/turndown.js > tmp/turndown.js
 npx terser --compress --mangle -- tmp/turndown.js > tmp/turndown.min.js
 
 # copy
