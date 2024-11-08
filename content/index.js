@@ -159,7 +159,7 @@ var render = (md) => {
   })
 }
 
-function mount () {
+function mount() {
   $('pre').style.display = 'none'
   var md = $('pre').innerText
   favicon()
@@ -176,8 +176,8 @@ function mount () {
 
         var color =
           state._themes[state.theme] === 'dark' ||
-          (state._themes[state.theme] === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-          ? 'dark' : 'light'
+            (state._themes[state.theme] === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            ? 'dark' : 'light'
 
         $('body').classList.remove(...Array.from($('body').classList).filter((name) => /^_theme|_color/.test(name)))
         dom.push(m('link#_theme', {
@@ -200,16 +200,16 @@ function mount () {
 
         if (state.raw) {
           if (state.content.syntax) {
-            dom.push(m('#_markdown', {oncreate: oncreate.html, onupdate: onupdate.html, class: theme},
+            dom.push(m('#_markdown', { oncreate: oncreate.html, onupdate: onupdate.html, class: theme },
               m.trust(`<pre class="language-md"><code class="language-md">${_escape(state.markdown)}</code></pre>`)
             ))
           }
           else {
-            dom.push(m('pre#_markdown', {oncreate: oncreate.html, onupdate: onupdate.html}, state.markdown))
+            dom.push(m('pre#_markdown', { oncreate: oncreate.html, onupdate: onupdate.html }, state.markdown))
           }
         }
         else {
-          dom.push(m('#_html', {oncreate: oncreate.html, onupdate: onupdate.html, class: theme},
+          dom.push(m('#_html', { oncreate: oncreate.html, onupdate: onupdate.html, class: theme },
             m.trust(state.html)
           ))
         }
@@ -220,7 +220,7 @@ function mount () {
         }
 
         if (state.theme === 'custom') {
-          dom.push(m('style', {type: 'text/css'}, state.custom.theme))
+          dom.push(m('style', { type: 'text/css' }, state.custom.theme))
         }
       }
 
@@ -247,11 +247,11 @@ var toc = (() => {
         html,
         ['level', 'id', 'title']
       )
-      .reduce((toc, {id, title, level}) => toc +=
-        '<div class="_ul">'.repeat(level) +
-        '<a href="#' + id + '">' + title.replace(/<a[^>]+>/g, '').replace(/<\/a>/g, '') + '</a>' +
-        '</div>'.repeat(level)
-      , '')
+        .reduce((toc, { id, title, level }) => toc +=
+          '<div class="_ul">'.repeat(level) +
+          '<a href="#' + id + '">' + title.replace(/<a[^>]+>/g, '').replace(/<\/a>/g, '') + '</a>' +
+          '</div>'.repeat(level)
+          , '')
   }
 })()
 
@@ -282,6 +282,7 @@ var _escape = (str) =>
     '<': '&lt;',
     '>': '&gt;'
   }[tag] || tag))
+
 
 if (document.readyState === 'complete') {
   mount()

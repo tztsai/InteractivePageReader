@@ -9,7 +9,14 @@ mkdir -p tmp
 
 # turndown.min.js
 npx rollup --config rollup.mjs --input turndown.mjs --file tmp/turndown.js
-# npx browserify tmp/turndown.js > tmp/turndown.js
+
+# Replace the function containing `require` with the async function
+sed -i '/var domino = require('"'"'@mixmark-io\/domino'"'"');/ {
+    N
+    s/var domino = require('"'"'@mixmark-io\/domino'"'"');\n\s*Parser.prototype.parseFromString = function (string) {/Parser.prototype.parseFromString = async function (string) {\n        var domino = await import("\/vendor\/domino.min.js");/
+}' tmp/turndown.js
+
+
 npx terser --compress --mangle -- tmp/turndown.js > tmp/turndown.min.js
 
 # copy

@@ -1,7 +1,7 @@
-
 var Popup = () => {
 
   var state = {
+    apiKey: '',
     compiler: '',
     options: {},
     content: {},
@@ -141,7 +141,12 @@ var Popup = () => {
 
     advanced: () => {
       chrome.runtime.sendMessage({message: 'popup.advanced'})
-    }
+    },
+
+    apiKeyChange: (e) => {
+      state.apiKey = e.target.value;
+      chrome.storage.local.set({ openaiApiKey: state.apiKey });
+    },
   }
 
   var init = (res) => {
@@ -158,6 +163,11 @@ var Popup = () => {
 
     state.settings = res.settings
     document.querySelector('body').classList.add(state.settings.theme)
+
+    chrome.storage.local.get('openaiApiKey', (result) => {
+      state.apiKey = result.openaiApiKey || '';
+      m.redraw();
+    });
 
     m.redraw()
   }
@@ -302,6 +312,16 @@ var Popup = () => {
         onclick: events.advanced
         },
         'Advanced Options'
+      ),
+
+      // OpenAI API Key
+      m('div',
+        m('label', 'OpenAI API Key:'),
+        m('input[type=text]', {
+          value: state.apiKey,
+          oninput: events.apiKeyChange,
+          placeholder: 'Enter your OpenAI API key'
+        })
       )
     )
 
