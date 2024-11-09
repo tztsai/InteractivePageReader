@@ -53,7 +53,7 @@ var Popup = () => {
     ],
     raw: false,
     tab: '',
-    tabs: ['theme', 'compiler', 'content'],
+    tabs: ['theme', 'compiler', 'content', 'openai'],
     compilers: [],
     description: {
       themes: {},
@@ -84,7 +84,7 @@ var Popup = () => {
           message: 'popup.compiler.name',
           compiler: state.compiler,
         }, () => {
-          chrome.runtime.sendMessage({message: 'popup'}, init)
+          chrome.runtime.sendMessage({ message: 'popup' }, init)
         })
       },
       options: (e) => {
@@ -133,14 +133,14 @@ var Popup = () => {
       chrome.runtime.sendMessage({
         message: 'popup.defaults'
       }, () => {
-        chrome.runtime.sendMessage({message: 'popup'}, init)
+        chrome.runtime.sendMessage({ message: 'popup' }, init)
         localStorage.removeItem('tab')
         state._tabs.activeTabIndex = 0
       })
     },
 
     advanced: () => {
-      chrome.runtime.sendMessage({message: 'popup.advanced'})
+      chrome.runtime.sendMessage({ message: 'popup.advanced' })
     },
 
     apiKeyChange: (e) => {
@@ -172,7 +172,7 @@ var Popup = () => {
     m.redraw()
   }
 
-  chrome.runtime.sendMessage({message: 'popup'}, init)
+  chrome.runtime.sendMessage({ message: 'popup' }, init)
 
   var oncreate = {
     ripple: (vnode) => {
@@ -189,7 +189,7 @@ var Popup = () => {
   var onupdate = (tab, key) => (vnode) => {
     var value = tab === 'compiler' ? state.options[key]
       : tab === 'content' ? state.content[key]
-      : null
+        : null
 
     if (vnode.dom.classList.contains('is-checked') !== value) {
       vnode.dom.classList.toggle('is-checked')
@@ -202,14 +202,14 @@ var Popup = () => {
       m('button.mdc-button mdc-button--raised m-button', {
         oncreate: oncreate.ripple,
         onclick: events.raw
-        },
+      },
         (state.raw ? 'Html' : 'Markdown')
       ),
       // defaults
       m('button.mdc-button mdc-button--raised m-button', {
         oncreate: oncreate.ripple,
         onclick: events.defaults
-        },
+      },
         'Defaults'
       ),
 
@@ -217,30 +217,30 @@ var Popup = () => {
       m('nav.mdc-tab-bar m-tabs', {
         oncreate: oncreate.tabs,
         onclick: events.tab
-        },
+      },
         state.tabs.map((tab) =>
-        m('a.mdc-tab', {
-          href: '#tab-' + tab,
+          m('a.mdc-tab', {
+            href: '#tab-' + tab,
           },
-          tab
-        )),
+            tab
+          )),
         m('span.mdc-tab-bar__indicator')
       ),
       m('.m-panels',
         // theme
         m('.m-panel', {
           class: state.tab === 'theme' ? 'is-active' : ''
-          },
+        },
           m('select.mdc-elevation--z2 m-select', {
             onchange: events.theme
-            },
+          },
             state._themes.map((theme) =>
-              m('option', {selected: state.theme === theme}, theme)
+              m('option', { selected: state.theme === theme }, theme)
             )
           ),
           m('select.mdc-elevation--z2 m-select', {
             onchange: events.themes
-            },
+          },
             state._width.map((width) =>
               m('option', {
                 selected: state.themes.width === width,
@@ -251,12 +251,12 @@ var Popup = () => {
         // compiler
         m('.m-panel', {
           class: state.tab === 'compiler' ? 'is-active' : ''
-          },
+        },
           m('select.mdc-elevation--z2 m-select', {
             onchange: events.compiler.name
-            },
+          },
             state.compilers.map((name) =>
-              m('option', {selected: state.compiler === name}, name)
+              m('option', { selected: state.compiler === name }, name)
             )
           ),
           m('.scroll', {
@@ -264,35 +264,35 @@ var Popup = () => {
               .filter((key) => typeof state.options[key] === 'boolean')
               .length > 8
               ? 'max' : ''
-            },
+          },
             Object.keys(state.options)
-            .filter((key) => typeof state.options[key] === 'boolean')
-            .map((key) =>
-              m('label.mdc-switch m-switch', {
-                onupdate: onupdate('compiler', key),
-                title: state.description.compiler[key]
+              .filter((key) => typeof state.options[key] === 'boolean')
+              .map((key) =>
+                m('label.mdc-switch m-switch', {
+                  onupdate: onupdate('compiler', key),
+                  title: state.description.compiler[key]
                 },
-                m('input.mdc-switch__native-control', {
-                  type: 'checkbox',
-                  name: key,
-                  checked: state.options[key],
-                  onchange: events.compiler.options
-                }),
-                m('.mdc-switch__background', m('.mdc-switch__knob')),
-                m('span.mdc-switch-label', key)
+                  m('input.mdc-switch__native-control', {
+                    type: 'checkbox',
+                    name: key,
+                    checked: state.options[key],
+                    onchange: events.compiler.options
+                  }),
+                  m('.mdc-switch__background', m('.mdc-switch__knob')),
+                  m('span.mdc-switch-label', key)
+                )
               )
-            )
           )
         ),
         // content
         m('.m-panel', {
           class: state.tab === 'content' ? 'is-active' : ''
-          },
+        },
           m('.scroll', Object.keys(state.content).map((key) =>
             m('label.mdc-switch m-switch', {
               onupdate: onupdate('content', key),
               title: state.description.content[key]
-              },
+            },
               m('input.mdc-switch__native-control', {
                 type: 'checkbox',
                 name: key,
@@ -303,6 +303,17 @@ var Popup = () => {
               m('span.mdc-switch-label', key)
             ))
           )
+        ),
+        // openai
+        m('.m-panel', {
+          class: state.tab === 'openai' ? 'is-active' : ''
+        },
+          m('input[type=password]', {
+            type: 'text',
+            placeholder: 'OpenAI API Key',
+            value: state.apiKey,
+            oninput: events.apiKeyChange
+          }),
         )
       ),
 
@@ -310,19 +321,9 @@ var Popup = () => {
       m('button.mdc-button mdc-button--raised m-button', {
         oncreate: oncreate.ripple,
         onclick: events.advanced
-        },
+      },
         'Advanced Options'
       ),
-
-      // OpenAI API Key
-      m('div',
-        m('label', 'OpenAI API Key:'),
-        m('input[type=text]', {
-          value: state.apiKey,
-          oninput: events.apiKeyChange,
-          placeholder: 'Enter your OpenAI API key'
-        })
-      )
     )
 
   var options = () =>
@@ -339,9 +340,9 @@ var Popup = () => {
             m('.col-xxl-6.col-xl-6.col-lg-6.col-md-6.col-sm-12',
               m('select.mdc-elevation--z2 m-select', {
                 onchange: events.theme
-                },
+              },
                 state._themes.map((theme) =>
-                  m('option', {selected: state.theme === theme}, theme)
+                  m('option', { selected: state.theme === theme }, theme)
                 )
               )
             ),
@@ -355,7 +356,7 @@ var Popup = () => {
             m('.col-xxl-6.col-xl-6.col-lg-6.col-md-6.col-sm-12',
               m('select.mdc-elevation--z2 m-select', {
                 onchange: events.themes
-                },
+              },
                 state._width.map((width) =>
                   m('option', {
                     selected: state.themes.width === width,
@@ -375,9 +376,9 @@ var Popup = () => {
         m('.bs-callout m-compiler',
           m('select.mdc-elevation--z2 m-select', {
             onchange: events.compiler.name
-            },
+          },
             state.compilers.map((name) =>
-              m('option', {selected: state.compiler === name}, name)
+              m('option', { selected: state.compiler === name }, name)
             )
           ),
           m('.scroll', {
@@ -385,24 +386,24 @@ var Popup = () => {
               .filter((key) => typeof state.options[key] === 'boolean')
               .length > 8
               ? 'max' : ''
-            },
+          },
             Object.keys(state.options)
-            .filter((key) => typeof state.options[key] === 'boolean')
-            .map((key) =>
-              m('label.mdc-switch m-switch', {
-                onupdate: onupdate('compiler', key),
-                title: state.description.compiler[key]
+              .filter((key) => typeof state.options[key] === 'boolean')
+              .map((key) =>
+                m('label.mdc-switch m-switch', {
+                  onupdate: onupdate('compiler', key),
+                  title: state.description.compiler[key]
                 },
-                m('input.mdc-switch__native-control', {
-                  type: 'checkbox',
-                  name: key,
-                  checked: state.options[key],
-                  onchange: events.compiler.options
-                }),
-                m('.mdc-switch__background', m('.mdc-switch__knob')),
-                m('span.mdc-switch-label', key)
+                  m('input.mdc-switch__native-control', {
+                    type: 'checkbox',
+                    name: key,
+                    checked: state.options[key],
+                    onchange: events.compiler.options
+                  }),
+                  m('.mdc-switch__background', m('.mdc-switch__knob')),
+                  m('span.mdc-switch-label', key)
+                )
               )
-            )
           )
         ),
       ),
@@ -414,7 +415,7 @@ var Popup = () => {
             m('label.mdc-switch m-switch', {
               onupdate: onupdate('content', key),
               title: state.description.content[key]
-              },
+            },
               m('input.mdc-switch__native-control', {
                 type: 'checkbox',
                 name: key,
@@ -429,7 +430,7 @@ var Popup = () => {
       ),
     )
 
-  return {state, render, options}
+  return { state, render, options }
 }
 
 if (document.querySelector('.is-popup')) {

@@ -30,6 +30,7 @@ md.inject = ({storage: {state}}) => (id) => {
   chrome.scripting.executeScript({
     target: {tabId: id},
     files: [
+      '/vendor/turndown.min.js',
       '/vendor/mithril.min.js',
       state.content.syntax && ['/vendor/prism.min.js', '/vendor/prism-autoloader.min.js', '/content/prism.js'],
       state.content.emoji && '/content/emoji.js',

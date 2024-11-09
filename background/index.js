@@ -1,4 +1,3 @@
-
 importScripts('/vendor/markdown-it.min.js')
 importScripts('/vendor/marked.min.js')
 importScripts('/vendor/remark.min.js')

@@ -147,7 +147,7 @@ body.dark .m-button {
   display: inline-block;
   width: 33.33%;
   max-width: 33.33%;
-  min-width: 33.33%;
+  min-width: 25%;
   height: 36px;
   max-height: 36px;
   min-height: 36px;
@@ -159,6 +159,17 @@ body.dark .m-button {
 .m-panels {}
 .m-panel { display: none; }
 .m-panel.is-active { display: block; }
+
+input {
+  font-size: 14px;
+  line-height: 17px;
+  color: #000;
+  background-color: #ececec;
+  border: none;
+  border-radius: 2px;
+  padding: 9px 12px;
+  margin-top: 20px;
+}
 
 /*---------------------------------------------------------------------------*/
 /*options scroll*/
