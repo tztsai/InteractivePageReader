@@ -1,19 +1,18 @@
 async function convertToMD(content) {
   await import('/vendor/turndown.min.js');  
   const turndownService = new TurndownService();
-  turndownService.remove(['script', 'style', 'input', 'meta', 'textarea', 'form', 'noscript', 'aside', 'nav', 'button', 'link', 'img', 'svg', 'canvas', 'audio', 'video', 'iframe']);
+  turndownService.remove(['input', 'textarea', 'form', 'aside', 'nav', 'button', 'canvas', 'audio', 'video', 'iframe', 'label']);
   return turndownService.turndown(content);
 }
 
 async function MDwise(text) {
-
   const prompt = `Convert the following text provided by the user to a well-structured Markdown document. For large chunks of text, consider splitting them into smaller subsections. For each section of any level containing too much information for the user to easily digest, **write a brief summary under its header with prefix "> Summary: "**. Do your best to enable the user to clearly and quickly understand the whole document from top level to bottom.`;
 
   const messageJson = {
     model: "gpt-4o-mini",
     messages: [
       { role: 'system', content: prompt },
-      { role: 'user', content: text },
+      { role: 'user', content: text }, 
     ],
     stream: true,
     max_tokens: 4096,
@@ -76,11 +75,21 @@ function fixTurnDown(md) {
   return md;
 }
 
+function cleanHtml(doc) {
+  doc.querySelectorAll(
+    'link, style, script, meta, noscript, header, nav, footer, div[role="navigation"]'
+  ).forEach(e => e.remove());
+  html = doc.querySelector('main') || doc.body;
+  return html;
+}
+
 (async () => {
+  content = cleanHtml(document)
   // convert the page to markdown
-  const md = fixTurnDown(await convertToMD(document.body));
+  const md = fixTurnDown(await convertToMD(content));
   document.body.innerHTML = `<pre>${md}</pre>`;
   // inject the renderer
   chrome.runtime.sendMessage({ message: 'inject', url: window.location.href });
-  await MDwise(md);
+  // dynamical AI summarization
+  // await MDwise(md);
 })()
