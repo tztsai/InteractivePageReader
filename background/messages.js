@@ -12,8 +12,13 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
         markdown = jax.tokenize(markdown)
       }
 
-      var html = compilers[state.compiler].compile(markdown)
-
+      try {
+        var html = compilers[state.compiler].compile(markdown)
+      } catch (err) {
+        sendResponse({error: err.message})
+        return;
+      }
+      
       if (state.content.mathjax) {
         html = jax.detokenize(html)
       }
@@ -44,8 +49,14 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
       }, sendResponse)
     }
     else if (req.message === 'inject') {
-      console.error('injecting', req.id);
-      md.inject({storage: {state}})(req.tabId)
+      chrome.tabs.query({ }, (tabs) => {
+        for (var tab of tabs) {
+          if (tab.url === req.url) {
+            md.inject({storage: {state}})(tab.id);
+            break;
+          }
+        }
+      });
     }
 
     // popup

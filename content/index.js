@@ -110,7 +110,7 @@ var update = (update) => {
     setTimeout(() => mj.render(), 60)
   }
 
-  !update && setTimeout(() => {
+  setTimeout(() => {
     const headers = document.querySelectorAll('h2, h3, h4, h5, h6');
     headers.forEach(header => {
       header.classList.add('foldable-header');
@@ -141,6 +141,7 @@ var render = (md) => {
     compiler: state.compiler,
     markdown: frontmatter(state.markdown)
   }, (res) => {
+    if (res.err) return;
     state.html = res.html
     if (state.content.emoji) {
       state.html = emojinator(state.html)

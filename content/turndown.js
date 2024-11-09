@@ -1,11 +1,11 @@
-async function MDwise(content, use_ai = false) {
+async function convertToMD(content) {
   await import('/vendor/turndown.min.js');  
-
   const turndownService = new TurndownService();
-  turndownService.remove(['script', 'style', 'input', 'textarea', 'form', 'noscript', 'aside', 'nav', 'button']);
-  let markdown = turndownService.turndown(content);
-  
-  if (!use_ai) return markdown;
+  turndownService.remove(['script', 'style', 'input', 'meta', 'textarea', 'form', 'noscript', 'aside', 'nav', 'button', 'link', 'img', 'svg', 'canvas', 'audio', 'video', 'iframe']);
+  return turndownService.turndown(content);
+}
+
+async function MDwise(text) {
 
   const prompt = `Convert the following text provided by the user to a well-structured Markdown document. For large chunks of text, consider splitting them into smaller subsections. For each section of any level containing too much information for the user to easily digest, **write a brief summary under its header with prefix "> Summary: "**. Do your best to enable the user to clearly and quickly understand the whole document from top level to bottom.`;
 
@@ -13,7 +13,7 @@ async function MDwise(content, use_ai = false) {
     model: "gpt-4o-mini",
     messages: [
       { role: 'system', content: prompt },
-      { role: 'user', content: markdown },
+      { role: 'user', content: text },
     ],
     stream: true,
     max_tokens: 4096,
@@ -40,6 +40,8 @@ async function MDwise(content, use_ai = false) {
   markdown = '';
   buf = '';
 
+  const interval = setInterval(() => render(markdown), 1000);
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -64,37 +66,21 @@ async function MDwise(content, use_ai = false) {
   if (buf.length > 0) {
     console.error('Error parsing JSON:', buf);
   }
-  return markdown;
+
+  clearInterval(interval);
+  render(markdown);
 };
 
-async function createNewTab(markdown) {
-  const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  return new Promise((resolve, reject) => {
-    chrome.tabs.create({ url: 'about:blank' }, (tab) => {
-      console.warn('Creating new tab with URL:', url);
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError);
-      }
-      const tabId = tab.id;
-      chrome.scripting.executeScript({
-        target: { tabId },
-        func: (markdown) => {
-          document.body.innerHTML = `<pre>${markdown}</pre>`;
-        },
-        args: [markdown]
-      }, () => {
-        if (chrome.runtime.lastError) {
-          return reject(chrome.runtime.lastError);
-        }
-        resolve(tabId);
-      });
-    });
-  });
-};
+function fixTurnDown(md) {
+  md = md.replace(/^(#*\s*)\[(\s*\n)+/gm, '$1[');
+  return md;
+}
 
 (async () => {
-  const md = await MDwise(document.body);
-  const tabId = await createNewTab(md);
-  chrome.runtime.sendMessage({ message: 'inject', tabId });
+  // convert the page to markdown
+  const md = fixTurnDown(await convertToMD(document.body));
+  document.body.innerHTML = `<pre>${md}</pre>`;
+  // inject the renderer
+  chrome.runtime.sendMessage({ message: 'inject', url: window.location.href });
+  await MDwise(md);
 })()
