@@ -43,6 +43,10 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
         injectImmediately: true
       }, sendResponse)
     }
+    else if (req.message === 'inject') {
+      console.error('injecting', req.id);
+      md.inject({storage: {state}})(req.tabId)
+    }
 
     // popup
     else if (req.message === 'popup') {
