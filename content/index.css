@@ -29,6 +29,31 @@ details summary {
   }
 }
 
+div.ai-qa {
+  max-height: 200px;
+  overflow: auto;
+  border: 3px solid #9c9ea2;
+  border-radius: 6px;
+  input {
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid #9c9ea2;
+    border-radius: inherit;
+    font-size: 16px;
+    &:focus {
+      outline: none;
+      border-bottom-color: #0078d4; /* Change the color to your preference */
+    }
+  }
+  p {
+    padding: 10px;
+    margin: 0;
+    border-bottom: 2px solid #9c9ea2;
+    font-weight: lighter;
+    font-size: 14px;
+  }
+}
+
 #_html, #_toc {
   word-wrap: break-word;
   visibility: hidden;

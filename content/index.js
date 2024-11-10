@@ -103,13 +103,11 @@ var update = (update) => {
   if (state.content.toc) {
     toc = document.getElementById('_toc');
     toc && toc.querySelectorAll('a').forEach((el) => {
-      toc.addEventListener('click', (e) => {
-        e.preventDefault();
+      el.addEventListener('click', (e) => {
         h = document.getElementById(e.target.getAttribute('href').slice(1))
         d = h.parentElement.parentElement;
         if (d.tagName === 'DETAILS') {
           d.open = true;
-          focusOnDetails(d, 'center');
         }
       })
     })
@@ -137,10 +135,8 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
     if (parent.tagName === 'SUMMARY') return;
 
     const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    details.appendChild(summary);
 
-    if (header.tagName < 'H4') {
+    if (header.tagName <= 'H3') {
       details.id = 'id-' + Math.random().toString(36).substring(2, 7);
     }
 
@@ -157,11 +153,11 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
     }
 
     parent.replaceChild(details, header);
-    summary.insertAdjacentElement('afterbegin', header);
+    details.insertAdjacentElement('afterbegin', header);
 
     // Expand a details element when hovering over it
     header.addEventListener('mouseenter', () => {
-      !isScrolling && focusOnDetails(details);
+      !scrollLock && focusOnDetails(details);
     });
     // details.addEventListener('click', () => {
     //   focusedDetails = details;
@@ -171,11 +167,11 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
 }
 
 var focusedDetails;
-var isScrolling = false;
+var scrollLock = false;
 
 var focusOnDetails = (details, scroll = 'follow') => {
   if (
-    isScrolling && focusedDetails
+    scrollLock && focusedDetails
     && findNext(details) !== focusedDetails
     && findPrev(details) !== focusedDetails
   ) {
@@ -183,7 +179,7 @@ var focusOnDetails = (details, scroll = 'follow') => {
     return;
   } 
 
-  isScrolling = true;
+  scrollLock = true;
   isDownward = true;
   isNewSection = false;
   details.open = true;
@@ -202,7 +198,7 @@ var focusOnDetails = (details, scroll = 'follow') => {
   }
   focusedDetails = details;
 
-  setTimeout(() => { isScrolling = false; }, 500);
+  setTimeout(() => { scrollLock = false; }, 500);
 
   if (scroll == 'center') {
     return details.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -213,16 +209,16 @@ var focusOnDetails = (details, scroll = 'follow') => {
   // keep the top of the section at the same position
   dy = rect2.top - rect1.top;
   if (isNewSection && isDownward) {
-    dy += rect2.height + 30;
-    focusedDetails = details.nextElementSibling;
+    // dy += rect2.height + 30;
+    // focusedDetails = details.nextElementSibling;
   }
   else if (isDownward) {  // move towards the end of the block
     dy += Math.max(Math.min(rect1.top, rect1.height - 50), 0);
   }
 
-  if (Math.abs(dy) > 50) {
+  if (Math.abs(dy) > 200) {
     window.scrollBy({ top: dy, behavior: 'smooth' });
-  } else isScrolling = false;
+  } else scrollLock = false;
 }
 
 function findNext(elm) {
