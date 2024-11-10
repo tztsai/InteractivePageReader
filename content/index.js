@@ -180,16 +180,10 @@ var focusOnDetails = (details, scroll = 'follow') => {
   } 
 
   scrollLock = true;
-  isDownward = true;
-  isNewSection = false;
   details.open = true;
 
   const rect1 = details.getBoundingClientRect();
   while (focusedDetails && !focusedDetails.contains(details)) {
-    if (focusedDetails.getBoundingClientRect().top > rect1.top)
-      isDownward = false;
-    if (details.firstChild.firstChild < focusedDetails.firstChild.firstChild)
-      isNewSection = true;
     focusedDetails.open = false;
     focusedDetails = focusedDetails.parentElement.closest('details');
   }
@@ -207,13 +201,13 @@ var focusOnDetails = (details, scroll = 'follow') => {
   const rect2 = details.getBoundingClientRect();
 
   // keep the top of the section at the same position
-  dy = rect2.top - rect1.top;
-  if (isNewSection && isDownward) {
-    // dy += rect2.height + 30;
-    // focusedDetails = details.nextElementSibling;
+  var dy = 0;
+  if (rect2.top < rect1.top && details.firstChild.firstChild.tagName === 'H2') {
+    dy += rect2.bottom - rect1.top - 30;
+    focusedDetails = details.lastChild.lastChild;
   }
-  else if (isDownward) {  // move towards the end of the block
-    dy += Math.max(Math.min(rect1.top, rect1.height - 50), 0);
+  else if (rect2.bottom > window.innerHeight) {
+    dy += Math.min(rect2.top, rect2.bottom - window.innerHeight);
   }
 
   if (Math.abs(dy) > 200) {

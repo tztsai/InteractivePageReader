@@ -67,7 +67,7 @@ function writeSummary(details, txt) {
   } else {
     var summary = details.querySelector('summary');
 
-    const p = document.createElement('blockquote');
+    const p = document.createElement('p');
     p.textContent = txt.trim();
     summary.appendChild(p);
 
@@ -107,8 +107,7 @@ function writeSummary(details, txt) {
             });
           
           createInput();
-          // m.redraw();
-          update();
+          update();  // render the new content
         }
       });
       return input;
