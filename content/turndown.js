@@ -117,7 +117,7 @@ function cleanHtml(doc) {
   doc.querySelectorAll(
     'link, style, script, meta, noscript, header, nav, footer, div[role="navigation"]'
   ).forEach(e => e.remove());
-  html = doc.querySelector('main') || doc.body;
+  html = doc.querySelector('article') || doc.querySelector('main') || doc.body;
   return html;
 }
 
