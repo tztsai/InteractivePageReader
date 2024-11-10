@@ -1,0 +1,5 @@
+vendor/
+themes/
+icons/
+build/
+node_modules/

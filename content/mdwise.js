@@ -19,7 +19,6 @@ function cleanHtml() {
 }
 
 async function generateSummaries(text) {
-
   // const prompt = `Convert the following text provided by the user to a well-structured Markdown document. For large chunks of text, consider splitting them into smaller subsections. For each section of any level containing too much information for the user to easily digest, **write a brief summary under its header with prefix "> Summary: "**. Do your best to enable the user to clearly and quickly understand the whole document from top level to bottom.`;
   const prompt = `In the given HTML file, for each <details> element, if necessary, write a proper and brief summary of its content.
 
@@ -144,7 +143,7 @@ async function generateSummaries(text) {
         s; s = s.previousElementSibling
       ) { s.remove(); }
       // convert the markdown content to text
-      if (state.content.useAI)
+      if (state.content.ai)
         generateSummaries(content.outerHTML);
     }
   }, 500);
