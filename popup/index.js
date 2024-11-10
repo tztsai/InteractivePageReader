@@ -306,9 +306,9 @@ var Popup = () => {
         ),
         // openai
         m('.m-panel', {
-          class: state.tab === 'ai' ? 'is-active' : ''
+          class: state.tab === 'ai' ? 'is-active' : '',
+          style: { paddingTop: '20px' }
         },
-          m('.mdc-switch__background', m('.mdc-switch__knob')),
           m('span.mdc-switch-label', 'Enter your OpenAI API Key:'),
           m('input[type=password]', {
             type: 'text',

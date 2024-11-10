@@ -66,7 +66,7 @@ md.messages = ({ storage: { defaults, state, set }, compilers, mathjax, xhr, web
           },
           args: [req.content]
         }, (html) => sendResponse({ tabId: sender.tab.id, html }));
-      });
+      }, sendResponse);
     }
     else if (req.message === 'readability') {
       chrome.scripting.executeScript({
@@ -84,7 +84,7 @@ md.messages = ({ storage: { defaults, state, set }, compilers, mathjax, xhr, web
             }
           }
         }, sendResponse);
-      });
+      }, sendResponse);
     }
     else if (req.message === 'inject') {
       md.inject({ storage: { state } })(req.tabId);

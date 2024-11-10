@@ -1,7 +1,7 @@
 function cleanHtml() {
   const doc = window.document;
   doc.querySelectorAll(
-    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"], .js-header-wrapper, .js-header, .js-site-search'
+    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"], figure, table, .js-header-wrapper, .js-header, .js-site-search'
   ).forEach(e => e.remove());
 
   chrome.runtime.sendMessage(
@@ -20,7 +20,7 @@ function cleanHtml() {
 
 async function generateSummaries(text) {
   // const prompt = `Convert the following text provided by the user to a well-structured Markdown document. For large chunks of text, consider splitting them into smaller subsections. For each section of any level containing too much information for the user to easily digest, **write a brief summary under its header with prefix "> Summary: "**. Do your best to enable the user to clearly and quickly understand the whole document from top level to bottom.`;
-  const prompt = `In the given HTML file, for each <details> element, if necessary, write a proper and brief summary of its content.
+  const prompt = `In the given HTML document, for each <details> element, if necessary, write a brief summary of its content. Also consider adding links in your summary to relevant headers in this document.
 
   Your response must strictly follow this format (each summary separated by two new lines):
 

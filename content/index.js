@@ -100,6 +100,21 @@ var update = (update) => {
 
   scroll(update)
 
+  if (state.content.toc) {
+    toc = document.getElementById('_toc');
+    toc && toc.querySelectorAll('a').forEach((el) => {
+      toc.addEventListener('click', (e) => {
+        e.preventDefault();
+        h = document.getElementById(e.target.getAttribute('href').slice(1))
+        d = h.parentElement.parentElement;
+        if (d.tagName === 'DETAILS') {
+          d.open = true;
+          focusOnDetails(d, 'center');
+        }
+      })
+    })
+  }
+
   if (state.content.syntax) {
     setTimeout(() => Prism.highlightAll(), 20)
   }
@@ -116,15 +131,20 @@ var update = (update) => {
   setTimeout(makeFoldable, 80);
 }
 
-var makeFoldable = (selector = 'h2, h3, h4') => {
+var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
   document.querySelectorAll(selector).forEach(header => {
-    if (header.parentNode.tagName === 'summary') return;
+    const parent = header.parentNode;
+    if (parent.tagName === 'SUMMARY') return;
 
     const details = document.createElement('details');
     const summary = document.createElement('summary');
-    const div = document.createElement('div');
-    details.id = 'id-' + Math.random().toString(36).substring(2, 7);
     details.appendChild(summary);
+
+    if (header.tagName < 'H4') {
+      details.id = 'id-' + Math.random().toString(36).substring(2, 7);
+    }
+
+    const div = document.createElement('div');
     details.appendChild(div);
 
     for (
@@ -136,13 +156,16 @@ var makeFoldable = (selector = 'h2, h3, h4') => {
       div.appendChild(s);
     }
 
-    header.parentNode.replaceChild(details, header);
+    parent.replaceChild(details, header);
     summary.insertAdjacentElement('afterbegin', header);
 
     // Expand a details element when hovering over it
-    details.addEventListener('mouseenter', () => {
+    header.addEventListener('mouseenter', () => {
       !isScrolling && focusOnDetails(details);
     });
+    // details.addEventListener('click', () => {
+    //   focusedDetails = details;
+    // });
   });
   document.readyState = 'complete';
 }
@@ -150,38 +173,106 @@ var makeFoldable = (selector = 'h2, h3, h4') => {
 var focusedDetails;
 var isScrolling = false;
 
-var focusOnDetails = (details) => {
-  if (details.open) return;
+var focusOnDetails = (details, scroll = 'follow') => {
+  if (
+    isScrolling && focusedDetails
+    && findNext(details) !== focusedDetails
+    && findPrev(details) !== focusedDetails
+  ) {
+    focusedDetails = details;
+    return;
+  } 
+
   isScrolling = true;
   isDownward = true;
+  isNewSection = false;
   details.open = true;
+
   const rect1 = details.getBoundingClientRect();
   while (focusedDetails && !focusedDetails.contains(details)) {
     if (focusedDetails.getBoundingClientRect().top > rect1.top)
       isDownward = false;
+    if (details.firstChild.firstChild < focusedDetails.firstChild.firstChild)
+      isNewSection = true;
     focusedDetails.open = false;
     focusedDetails = focusedDetails.parentElement.closest('details');
   }
-  focusedDetails = details;
-  const rect2 = details.getBoundingClientRect();
-  dy = rect2.top - rect1.top;  // keep the top of rect still
-  if (details.querySelector('details')) {
-    if (isDownward) {
-      dy += rect2.height + 30;
-      focusedDetails = details.nextElementSibling;
-    }
+  for (p = details.parentElement; p.tagName !== 'BODY'; p = p.parentElement) {
+    if (p.tagName === 'DETAILS') p.open = true;
   }
-  else if (isDownward) {
+  focusedDetails = details;
+
+  setTimeout(() => { isScrolling = false; }, 500);
+
+  if (scroll == 'center') {
+    return details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  const rect2 = details.getBoundingClientRect();
+
+  // keep the top of the section at the same position
+  dy = rect2.top - rect1.top;
+  if (isNewSection && isDownward) {
+    dy += rect2.height + 30;
+    focusedDetails = details.nextElementSibling;
+  }
+  else if (isDownward) {  // move towards the end of the block
     dy += Math.max(Math.min(rect1.top, rect1.height - 50), 0);
   }
-  else if (rect2.bottom > window.innerHeight) {
-    dy += rect2.bottom - window.innerHeight + 50;
+
+  if (Math.abs(dy) > 50) {
+    window.scrollBy({ top: dy, behavior: 'smooth' });
+  } else isScrolling = false;
+}
+
+function findNext(elm) {
+  tag = elm.tagName;
+
+  function getNextNode(node) {
+    if (node.firstChild) return node.firstChild;
+    while (node) {
+      if (node.nextSibling) return node.nextSibling;
+      node = node.parentNode;
+    }
+    return null;
   }
-  window.scrollBy({ top: dy, behavior: 'smooth' });
-  if (Math.abs(dy) > 200)
-    setTimeout(() => { isScrolling = false; }, 300);
-  else
-    isScrolling = false;
+
+  let node = getNextNode(elm);
+
+  while (node) {
+    if (node.nodeType === 1 && node.tagName === tag) {
+      return node;
+    }
+    node = getNextNode(node);
+  }
+
+  return null;
+}
+
+function findPrev(elm) {
+  tag = elm.tagName;
+
+  function getPreviousNode(node) {
+    if (node.previousSibling) {
+      node = node.previousSibling;
+      while (node && node.lastChild) {
+        node = node.lastChild;
+      }
+      return node;
+    }
+    return node.parentNode;
+  }
+
+  let node = getPreviousNode(elm);
+
+  while (node) {
+    if (node.nodeType === 1 && node.tagName === tag) {
+      return node;
+    }
+    node = getPreviousNode(node);
+  }
+
+  return null;
 }
 
 var render = (md) => {
