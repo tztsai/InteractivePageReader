@@ -1,7 +1,7 @@
 function cleanHtml() {
   const doc = window.document;
   doc.querySelectorAll(
-    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"]'
+    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"], .js-header-wrapper, .js-header, .js-site-search'
   ).forEach(e => e.remove());
 
   chrome.runtime.sendMessage(
@@ -19,8 +19,8 @@ function cleanHtml() {
 }
 
 async function generateSummaries(text) {
-  const useAI = state.settings.useAI;
-  if (!useAI) return;
+  // const useAI = state.useAI;
+  // if (!useAI) return;
 
   // const prompt = `Convert the following text provided by the user to a well-structured Markdown document. For large chunks of text, consider splitting them into smaller subsections. For each section of any level containing too much information for the user to easily digest, **write a brief summary under its header with prefix "> Summary: "**. Do your best to enable the user to clearly and quickly understand the whole document from top level to bottom.`;
   const prompt = `In the given HTML file, for each <details> element, if necessary, write a proper and brief summary of its content.
@@ -31,7 +31,7 @@ async function generateSummaries(text) {
 
   ID: Summary
 
-  The ID is the "id" attribute of the <details> element, e.g. "det-12345".
+  The ID is the "id" attribute of the <details> element, e.g. "id-12345".
   `
 
   const messageJson = {
@@ -73,12 +73,13 @@ async function generateSummaries(text) {
     while (i < splits.length - !done) {
       if (!splits[i].trim()) break;
       try {
-        const [_, id, txt] = splits[i].match(/\s*(det-\w+): ([\s\S]+)/m)
-        const element = document.getElementById(id);
-        if (element) {
-          const p = document.createElement('p');
+        const [_, id, txt] = splits[i].match(/\s*(id-\w+): ([\s\S]+)/m)
+        const d = document.getElementById(id);
+        if (d) {
+          const p = document.createElement('blockquote');
           p.textContent = txt.trim();
-          element.querySelector('summary').appendChild(p);
+          d.querySelector('summary').appendChild(p);
+          focusOnDetails(d);
         } else {
           console.error('Invalid ID:', id)
         }
@@ -138,9 +139,13 @@ async function generateSummaries(text) {
   var timeout = setInterval(() => {
     if (document.readyState === 'complete') {
       clearInterval(timeout);
-      content = document.getElementById('_html').outerHTML;
+      content = document.getElementById('_html');
+      for (
+        s = content.querySelector('h1')?.previousElementSibling;
+        s; s = s.previousElementSibling
+      ) { s.remove(); }
       // convert the markdown content to text
-      generateSummaries(content);
+      generateSummaries(content.outerHTML);
     }
-  }, 300);
+  }, 500);
 })()

@@ -112,20 +112,21 @@ var update = (update) => {
     setTimeout(() => mj.render(), 60)
   }
 
+  // Add details & summary tags to each section separated by headers
   setTimeout(() => {
     document.querySelectorAll('h2, h3, h4').forEach(header => {
       if (header.parentNode.tagName === 'summary') return;
 
       const details = document.createElement('details');
       const summary = document.createElement('summary');
-      details.id = 'det-' + Math.random().toString(36).substring(2, 7);
+      details.id = 'id-' + Math.random().toString(36).substring(2, 7);
       details.appendChild(summary);
-      
+
       let sibling = header.nextElementSibling;
       while (sibling && (!/^H[1-6]$/.test(sibling.tagName) || sibling.tagName > header.tagName)) {
         const nextSibling = sibling.nextElementSibling;
         if (!summary.textContent &&
-          sibling.tagName === 'blockquote' && 
+          sibling.tagName === 'blockquote' &&
           sibling.textContent.trim().startsWith('Summary:')) {
           summary.textContent = sibling.textContent.replace(/^\s*Summary:\s*/m, '');
         } else {
@@ -133,12 +134,42 @@ var update = (update) => {
         }
         sibling = nextSibling;
       }
-      
+
       header.parentNode.replaceChild(details, header);
       summary.insertAdjacentElement('afterbegin', header);
+
+      // Focus on details when hovering over it
+      var lastTriggerTime = 0;
+      details.addEventListener('mouseenter', () => {
+        const now = Date.now();
+        if (now - lastTriggerTime >= 400) {
+          focusOnDetails(details);
+          lastTriggerTime = now;
+        }
+      });
     });
     document.readyState = 'complete';
   }, 80);
+}
+
+var focusedDetails;
+
+var focusOnDetails = (details) => {
+  if (details.open) return;
+  details.open = true;
+  const rect1 = details.getBoundingClientRect();
+  while (focusedDetails && !focusedDetails.contains(details)) {
+    focusedDetails.open = false;
+    focusedDetails = focusedDetails.parentElement.closest('details');
+  }
+  const rect2 = details.getBoundingClientRect();
+  dy = rect2.top - rect1.top;  // keep the top of rect still
+  if (dy < -20)
+    dy += Math.min(rect1.top, rect1.height) * 0.8;  // scroll down
+  else if (dy > 20)
+    dy -= Math.max(rect1.bottom - window.innerHeight, 0);  // scroll up
+  window.scrollBy(0, dy);
+  focusedDetails = details;
 }
 
 var render = (md) => {

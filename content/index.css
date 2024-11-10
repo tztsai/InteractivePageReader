@@ -7,6 +7,11 @@ html, body {
   width: auto !important; max-width: 100% !important;
 }
 
+details {
+  margin-bottom: -24;
+  margin-top: 0;
+}
+
 details summary {
   cursor: pointer;
   align-items: center;
@@ -14,9 +19,7 @@ details summary {
   h1, h2, h3, h4, h5, h6 {
     display: inline;
   }
-  p {
-    font-family: inherit;
-    font-size: inherit;
+  blockquote {
     font-weight: normal;
     font-style: italic;
     opacity: 0.8;
