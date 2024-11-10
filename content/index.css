@@ -12,6 +12,11 @@ details {
   margin-top: 0;
 }
 
+details > div {
+  max-height: 600px;
+  overflow: auto;
+}
+
 details summary {
   cursor: pointer;
   align-items: center;
