@@ -64,7 +64,6 @@ async function generateSummaries(text) {
         if (element) {
           const p = document.createElement('p');
           p.textContent = txt.trim();
-          // element.insertAdjacentElement('afterbegin', p);
           element.querySelector('summary').appendChild(p);
         } else {
           console.error('Invalid ID:', id)
@@ -140,7 +139,7 @@ function cleanHtml(doc) {
         content = document.getElementById('_html').outerHTML;
         // convert the markdown content to text
         await generateSummaries(content);
-      }, 200);
+      }, 300);
     }
   }, 20);
 })()

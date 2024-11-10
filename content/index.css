@@ -14,13 +14,12 @@ details summary {
   h1, h2, h3, h4, h5, h6 {
     display: inline;
   }
-  marker {
-    opacity: 0.5;
-  }
   p {
     font-family: inherit;
     font-size: inherit;
     font-weight: normal;
+    font-style: italic;
+    opacity: 0.8;
   }
 }
 
