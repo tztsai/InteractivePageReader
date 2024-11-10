@@ -9,35 +9,24 @@ html, body {
 
 details summary {
   cursor: pointer;
+  align-items: center;
+  font-size: inherit;
+  h1, h2, h3, h4, h5, h6 {
+    display: inline;
+  }
+  marker {
+    opacity: 0.5;
+  }
+  p {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: normal;
+  }
 }
 
 #_html, #_toc {
   word-wrap: break-word;
   visibility: hidden;
-}
-
-.foldable-content {
-  display: none;
-}
-
-.foldable-content.visible {
-  display: block;
-}
-
-.foldable-header {
-  cursor: pointer;
-}
-
-.foldable-header::before {
-  content: '\25B8'; /* Right-pointing triangle */
-  cursor: pointer;
-  display: inline-block;
-  margin-right: 8px;
-  opacity: 0.5;
-}
-
-.foldable-header.unfolded::before {
-  content: '\25BE'; /* Down-pointing triangle */
 }
 
 /*---------------------------------------------------------------------------*/

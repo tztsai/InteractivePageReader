@@ -111,25 +111,29 @@ var update = (update) => {
   }
 
   setTimeout(() => {
-    const headers = document.querySelectorAll('h2, h3, h4, h5, h6');
-    headers.forEach(header => {
-      header.classList.add('foldable-header');
-      const content = document.createElement('div');
-      content.classList.add('foldable-content');
+    document.querySelectorAll('h2, h3, h4').forEach(header => {
+      if (header.parentNode.tagName === 'summary') return;
 
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      details.id = 'det-' + Math.random().toString(36).substring(2, 7);
+      details.appendChild(summary);
+      
       let sibling = header.nextElementSibling;
       while (sibling && (!/^H[1-6]$/.test(sibling.tagName) || sibling.tagName > header.tagName)) {
         const nextSibling = sibling.nextElementSibling;
-        content.appendChild(sibling);
+        if (!summary.textContent &&
+          sibling.tagName === 'blockquote' && 
+          sibling.textContent.trim().startsWith('Summary:')) {
+          summary.textContent = sibling.textContent.replace(/^\s*Summary:\s*/m, '');
+        } else {
+          details.appendChild(sibling);
+        }
         sibling = nextSibling;
       }
-
-      header.insertAdjacentElement('afterend', content);
-
-      header.addEventListener('click', () => {
-        content.classList.toggle('visible');
-        header.classList.toggle('unfolded');
-      });
+      
+      header.parentNode.replaceChild(details, header);
+      summary.insertAdjacentElement('afterbegin', header);
     });
   }, 80);
 }

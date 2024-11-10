@@ -49,7 +49,7 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
       }, sendResponse)
     }
     else if (req.message === 'inject') {
-      chrome.tabs.query({ }, (tabs) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         for (var tab of tabs) {
           if (tab.url === req.url) {
             md.inject({storage: {state}})(tab.id);
