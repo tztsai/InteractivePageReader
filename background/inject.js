@@ -13,7 +13,12 @@ md.inject = ({storage: {state}}) => (id) => {
       icon: state.settings.icon,
     }],
     func: (_args) => {
-      document.querySelector('pre').style.visibility = 'hidden'
+      pre = document.querySelector('pre');
+      if (!pre) {
+        console.error('No <pre> element found');
+        return;
+      }
+      pre.style.visibility = 'hidden'
       args = _args
     },
     injectImmediately: true
@@ -30,7 +35,6 @@ md.inject = ({storage: {state}}) => (id) => {
   chrome.scripting.executeScript({
     target: {tabId: id},
     files: [
-      '/vendor/turndown.min.js',
       '/vendor/mithril.min.js',
       state.content.syntax && ['/vendor/prism.min.js', '/vendor/prism-autoloader.min.js', '/content/prism.js'],
       state.content.emoji && '/content/emoji.js',

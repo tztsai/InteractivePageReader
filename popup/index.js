@@ -2,6 +2,7 @@ var Popup = () => {
 
   var state = {
     apiKey: '',
+    useAI: false,
     compiler: '',
     options: {},
     content: {},
@@ -53,7 +54,7 @@ var Popup = () => {
     ],
     raw: false,
     tab: '',
-    tabs: ['theme', 'compiler', 'content', 'openai'],
+    tabs: ['ai', 'theme', 'compiler', 'content'],
     compilers: [],
     description: {
       themes: {},
@@ -141,6 +142,12 @@ var Popup = () => {
 
     advanced: () => {
       chrome.runtime.sendMessage({ message: 'popup.advanced' })
+    },
+
+
+    switchAI: (e) => {
+      state.useAI = e.target.checked;
+      m.redraw();
     },
 
     apiKeyChange: (e) => {
@@ -306,8 +313,17 @@ var Popup = () => {
         ),
         // openai
         m('.m-panel', {
-          class: state.tab === 'openai' ? 'is-active' : ''
+          class: state.tab === 'ai' ? 'is-active' : ''
         },
+          m('label.mdc-switch m-switch',
+            m('input.mdc-switch__native-control', {
+              type: 'checkbox',
+              name: 'ai',
+              checked: state.useAI,
+            }),
+            m('.mdc-switch__background', m('.mdc-switch__knob')),
+            m('span.mdc-switch-label', 'AI Summary')
+          ),
           m('input[type=password]', {
             type: 'text',
             placeholder: 'OpenAI API Key',

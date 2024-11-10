@@ -1,5 +1,4 @@
-
-md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webrequest, icon}) => {
+md.messages = ({ storage: { defaults, state, set }, compilers, mathjax, xhr, webrequest, icon }) => {
 
   return (req, sender, sendResponse) => {
 
@@ -15,24 +14,24 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
       try {
         var html = compilers[state.compiler].compile(markdown)
       } catch (err) {
-        sendResponse({error: err.message})
+        sendResponse({ error: err.message })
         return;
       }
-      
+
       if (state.content.mathjax) {
         html = jax.detokenize(html)
       }
 
-      sendResponse({message: 'html', html})
+      sendResponse({ message: 'html', html })
     }
     else if (req.message === 'autoreload') {
       xhr.get(req.location, (err, body) => {
-        sendResponse({err, body})
+        sendResponse({ err, body })
       })
     }
     else if (req.message === 'prism') {
       chrome.scripting.executeScript({
-        target: {tabId: sender.tab.id},
+        target: { tabId: sender.tab.id },
         files: [
           `/vendor/prism/prism-${req.language}.min.js`,
         ],
@@ -41,22 +40,55 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
     }
     else if (req.message === 'mathjax') {
       chrome.scripting.executeScript({
-        target: {tabId: sender.tab.id},
+        target: { tabId: sender.tab.id },
         files: [
           `/vendor/mathjax/extensions/${req.extension}.js`,
         ],
         injectImmediately: true
       }, sendResponse)
     }
-    else if (req.message === 'inject') {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        for (var tab of tabs) {
-          if (tab.url === req.url) {
-            md.inject({storage: {state}})(tab.id);
-            break;
-          }
-        }
+    else if (req.message === 'turndown') {
+      chrome.scripting.executeScript({
+        target: { tabId: sender.tab.id },
+        files: ['/vendor/turndown.min.js'],
+        injectImmediately: true
+      }, () => {
+        chrome.scripting.executeScript({
+          target: { tabId: sender.tab.id },
+          func: (content) => {
+            const turndownService = new TurndownService();
+            turndownService.remove(
+              ['input', 'textarea', 'form', 'aside', 'nav', 'button', 'canvas', 'audio', 'video', 'label', 'datalist', 'keygen', 'output', 'progress', 'meter', 'menu', 'menuitem']
+            );
+            md = turndownService.turndown(content)
+                //  .replace(/^(#*\s*)\[(\s*\n)+/gm, '$1[');
+            return `<pre>${md}</pre>`;
+          },
+          args: [req.content]
+        }, (html) => sendResponse({ tabId: sender.tab.id, html }));
       });
+    }
+    else if (req.message === 'readability') {
+      chrome.scripting.executeScript({
+        target: { tabId: sender.tab.id },
+        files: ['/vendor/readability.min.js'],
+        injectImmediately: true
+      }, () => {
+        chrome.scripting.executeScript({
+          target: { tabId: sender.tab.id },
+          func: () => {
+            try {
+              return new Readability(document).parse();
+            } catch (err) {
+              return { err };
+            }
+          }
+        }, sendResponse);
+      });
+    }
+    else if (req.message === 'inject') {
+      md.inject({ storage: { state } })(req.tabId);
+      sendResponse();
     }
 
     // popup
@@ -66,44 +98,44 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
         description: compilers[state.compiler].description,
         compilers: Object.keys(compilers),
         themes: state.themes,
-        settings: {theme: state.settings.theme}
+        settings: { theme: state.settings.theme }
       }))
     }
     else if (req.message === 'popup.theme') {
-      set({theme: req.theme})
-      notifyContent({message: 'theme', theme: req.theme})
+      set({ theme: req.theme })
+      notifyContent({ message: 'theme', theme: req.theme })
       sendResponse()
     }
     else if (req.message === 'popup.raw') {
-      set({raw: req.raw})
-      notifyContent({message: 'raw', raw: req.raw})
+      set({ raw: req.raw })
+      notifyContent({ message: 'raw', raw: req.raw })
       sendResponse()
     }
     else if (req.message === 'popup.themes') {
-      set({themes: req.themes})
-      notifyContent({message: 'themes', themes: req.themes})
+      set({ themes: req.themes })
+      notifyContent({ message: 'themes', themes: req.themes })
       sendResponse()
     }
     else if (req.message === 'popup.defaults') {
       var options = Object.assign({}, defaults)
       options.origins = state.origins
       set(options)
-      notifyContent({message: 'reload'})
+      notifyContent({ message: 'reload' })
       sendResponse()
     }
     else if (req.message === 'popup.compiler.name') {
-      set({compiler: req.compiler})
-      notifyContent({message: 'reload'})
+      set({ compiler: req.compiler })
+      notifyContent({ message: 'reload' })
       sendResponse()
     }
     else if (req.message === 'popup.compiler.options') {
-      set({[req.compiler]: req.options})
-      notifyContent({message: 'reload'})
+      set({ [req.compiler]: req.options })
+      notifyContent({ message: 'reload' })
       sendResponse()
     }
     else if (req.message === 'popup.content') {
-      set({content: req.content})
-      notifyContent({message: 'reload'})
+      set({ content: req.content })
+      notifyContent({ message: 'reload' })
       webrequest()
       sendResponse()
     }
@@ -111,7 +143,7 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
       // ff: opens up about:addons with openOptionsPage
       if (/Firefox/.test(navigator.userAgent)) {
         chrome.management.getSelf((extension) => {
-          chrome.tabs.create({url: extension.optionsUrl})
+          chrome.tabs.create({ url: extension.optionsUrl })
         })
       }
       else {
@@ -134,18 +166,18 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
         path: true,
         match: defaults.match,
       }
-      set({origins: state.origins})
+      set({ origins: state.origins })
       sendResponse()
     }
     else if (req.message === 'origin.remove') {
       delete state.origins[req.origin]
-      set({origins: state.origins})
+      set({ origins: state.origins })
       webrequest()
       sendResponse()
     }
     else if (req.message === 'origin.update') {
       state.origins[req.origin] = req.options
-      set({origins: state.origins})
+      set({ origins: state.origins })
       webrequest()
       sendResponse()
     }
@@ -156,21 +188,21 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
     }
     // settings options
     else if (req.message === 'options.icon') {
-      set({settings: req.settings})
+      set({ settings: req.settings })
       icon()
       sendResponse()
     }
     else if (req.message === 'options.theme') {
-      set({settings: req.settings})
+      set({ settings: req.settings })
       sendResponse()
     }
     else if (req.message === 'custom.get') {
       sendResponse(state.custom)
     }
     else if (req.message === 'custom.set') {
-      set({custom: req.custom}).then(sendResponse).catch((err) => {
+      set({ custom: req.custom }).then(sendResponse).catch((err) => {
         if (/QUOTA_BYTES_PER_ITEM quota exceeded/.test(err.message)) {
-          sendResponse({error: 'Minified theme exceeded 8KB in size!'})
+          sendResponse({ error: 'Minified theme exceeded 8KB in size!' })
         }
       })
     }
@@ -178,8 +210,8 @@ md.messages = ({storage: {defaults, state, set}, compilers, mathjax, xhr, webreq
     return true
   }
 
-  function notifyContent (req, res) {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+  function notifyContent(req, res) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.sendMessage(tabs[0].id, req, res)
     })
   }

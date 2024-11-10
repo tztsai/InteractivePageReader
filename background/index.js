@@ -43,11 +43,25 @@ importScripts('/background/icon.js')
       contexts: ["page"]
     });
   });
+  
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "convertToMarkdown") {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ["/content/turndown.js"]
+        files: ["/content/mdwise.js"]
+      });
+    }
+  });
+
+  chrome.commands.onCommand.addListener((command) => {
+    if (command === "convert-to-markdown") {
+      chrome.tabs.query({active: true, currentWindow: true}, ([tab]) => {
+        if (tab) {
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ["/content/mdwise.js"]
+          });
+        }
       });
     }
   });

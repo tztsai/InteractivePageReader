@@ -1,13 +1,27 @@
-async function convertToMD(content) {
-  await import('/vendor/turndown.min.js');  
-  const turndownService = new TurndownService();
-  turndownService.remove(
-    ['input', 'textarea', 'form', 'aside', 'nav', 'button', 'canvas', 'audio', 'video', 'label', 'select', 'option', 'datalist', 'keygen', 'output', 'progress', 'meter', 'menu', 'menuitem']
+function cleanHtml() {
+  const doc = window.document;
+  doc.querySelectorAll(
+    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"]'
+  ).forEach(e => e.remove());
+
+  chrome.runtime.sendMessage(
+    { message: 'readability' },
+    ([{ result }]) => {
+      if (result.err) {
+        console.error('Error parsing content:', error);
+        html = doc.querySelector('article') || doc.querySelector('main');
+        if (html) doc.body.innerHTML = html.outerHTML;
+      } else {
+        doc.body.outerHTML = result.content;
+      }
+    }
   );
-  return turndownService.turndown(content);
 }
 
 async function generateSummaries(text) {
+  const useAI = state.settings.useAI;
+  if (!useAI) return;
+
   // const prompt = `Convert the following text provided by the user to a well-structured Markdown document. For large chunks of text, consider splitting them into smaller subsections. For each section of any level containing too much information for the user to easily digest, **write a brief summary under its header with prefix "> Summary: "**. Do your best to enable the user to clearly and quickly understand the whole document from top level to bottom.`;
   const prompt = `In the given HTML file, for each <details> element, if necessary, write a proper and brief summary of its content.
 
@@ -24,7 +38,7 @@ async function generateSummaries(text) {
     model: "gpt-4o-mini",
     messages: [
       { role: 'system', content: prompt },
-      { role: 'user', content: text }, 
+      { role: 'user', content: text },
     ],
     stream: true,
     max_tokens: 4096,
@@ -108,27 +122,17 @@ async function generateSummaries(text) {
   }, 1000);
 };
 
-function fixTurnDown(md) {
-  md = md.replace(/^(#*\s*)\[(\s*\n)+/gm, '$1[');
-  return md;
-}
-
-function cleanHtml(doc) {
-  doc.querySelectorAll(
-    'link, style, script, meta, noscript, header, nav, footer, div[role="navigation"]'
-  ).forEach(e => e.remove());
-  html = doc.querySelector('article') || doc.querySelector('main') || doc.body;
-  return html;
-}
-
 (async () => {
-  content = cleanHtml(document)
+  // clean the HTML content
+  cleanHtml();
   // convert the page to markdown
-  const md = fixTurnDown(await convertToMD(content));
-  document.body.innerHTML = `<pre>${md}</pre>`;
-  // inject the markdown renderer
   chrome.runtime.sendMessage(
-    { message: 'inject', url: window.location.href },
+    { message: 'turndown', content: document.body.innerHTML },
+    ({ html: [{ result }], tabId }) => {
+      document.body.innerHTML = result;
+      // inject the markdown renderer
+      chrome.runtime.sendMessage({ message: 'inject', tabId })
+    }
   );
   // wait for the document loading and rendering to complete
   var timeout = setInterval(() => {
