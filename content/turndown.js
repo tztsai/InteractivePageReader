@@ -53,8 +53,8 @@ async function generateSummaries(text) {
   var done = false;
 
   const fillSummary = () => {
-    output = output.trim().replace(/^```\s*[a-z]*$/g, '');
-    splits = output.split(/\n{2,}/);
+    output = output.replace(/\s*```\s*[a-z]*\s*/g, '');
+    splits = output.trim().split(/\n{2,}/);
     var i = 0;
     while (i < splits.length - !done) {
       if (!splits[i].trim()) break;
@@ -130,16 +130,13 @@ function cleanHtml(doc) {
   chrome.runtime.sendMessage(
     { message: 'inject', url: window.location.href },
   );
-  // wait for the document loading to complete
+  // wait for the document loading and rendering to complete
   var timeout = setInterval(() => {
     if (document.readyState === 'complete') {
-      // wait for markdown rendering to complete
       clearInterval(timeout);
-      setTimeout(async () => {
-        content = document.getElementById('_html').outerHTML;
-        // convert the markdown content to text
-        await generateSummaries(content);
-      }, 300);
+      content = document.getElementById('_html').outerHTML;
+      // convert the markdown content to text
+      generateSummaries(content);
     }
-  }, 20);
+  }, 300);
 })()

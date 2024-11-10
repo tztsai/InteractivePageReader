@@ -96,6 +96,8 @@ var onupdate = {
 }
 
 var update = (update) => {
+  document.readyState = 'interactive';
+
   scroll(update)
 
   if (state.content.syntax) {
@@ -135,6 +137,7 @@ var update = (update) => {
       header.parentNode.replaceChild(details, header);
       summary.insertAdjacentElement('afterbegin', header);
     });
+    document.readyState = 'complete';
   }, 80);
 }
 
