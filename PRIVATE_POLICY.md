@@ -1,4 +1,4 @@
-Privacy Policy for Interactive Page Reader
+# Privacy Policy for Interactive Page Reader
 
 Effective Date: [11 November 2024]
 
