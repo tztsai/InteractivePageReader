@@ -16,8 +16,6 @@ async function generateSummaries(html) {
   #id-12345: Summary of id-12345. Refer to <a href="#a-header">A Header</a>.
   `
 
-  html = DOMParser.parseFromString(html, 'text/html');
-  
   // remove unnecessary elements to reduce query length
   for (  // remove all elements before the first header
     s = html.querySelector('h1')?.previousElementSibling;
@@ -50,7 +48,7 @@ async function generateSummaries(html) {
     return splits.slice(i).join('\n\n');
   }
 
-  await getAIResponse(text, prompt, fillSummary);
+  await getAIResponse(html.innerHTML, prompt, fillSummary);
 };
 
 function writeSummary(details, txt) {
@@ -337,7 +335,7 @@ function findPrev(elm) {
       clearInterval(interval);
 
       // get the HTML content after rendering
-      const content = document.getElementById('_html')?.innerHTML;
+      const content = document.getElementById('_html');
       if (!content) return;
 
       // add details & summary tags to each section separated by headers

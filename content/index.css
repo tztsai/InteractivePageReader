@@ -32,6 +32,7 @@ details summary {
   h5,
   h6 {
     display: inline;
+    width: 70%;
   }
 
   p {
@@ -42,10 +43,15 @@ details summary {
 }
 
 div.ai-qa {
-  max-height: 200px;
+  max-height: 400px;
   overflow: auto;
   border: 3px solid #9c9ea2;
   border-radius: 6px;
+
+  &:focus {
+    outline: none;
+    border-color: #9c9ea2;
+  }
 
   input {
     padding: 10px;
@@ -56,8 +62,7 @@ div.ai-qa {
 
     &:focus {
       outline: none;
-      border-bottom-color: #0078d4;
-      /* Change the color to your preference */
+      border-color: #9c9ea2;
     }
   }
 
