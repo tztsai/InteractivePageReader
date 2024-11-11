@@ -103,8 +103,9 @@ var update = (update) => {
   if (state.content.toc) {
     toc = document.getElementById('_toc');
     toc && toc.querySelectorAll('a').forEach((el) => {
+      const id = el.getAttribute('href').slice(1);
       el.addEventListener('click', (e) => {
-        h = document.getElementById(e.target.getAttribute('href').slice(1))
+        h = document.getElementById(id);
         d = h.parentElement.parentElement;
         if (d.tagName === 'DETAILS') {
           d.open = true;
@@ -124,145 +125,6 @@ var update = (update) => {
   if (state.content.mathjax) {
     setTimeout(() => mj.render(), 60)
   }
-
-  // Add details & summary tags to each section separated by headers
-  setTimeout(makeFoldable, 80);
-}
-
-var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
-  document.querySelectorAll(selector).forEach(header => {
-    const parent = header.parentNode;
-    if (parent.tagName === 'SUMMARY') return;
-
-    const details = document.createElement('details');
-
-    if (header.tagName <= 'H3') {
-      details.id = 'id-' + Math.random().toString(36).substring(2, 7);
-    }
-
-    const div = document.createElement('div');
-    details.appendChild(div);
-
-    for (
-      let s = header.nextElementSibling, p;
-      s && (!/^H[1-6]$/.test(s.tagName) || s.tagName > header.tagName);
-      s = p
-    ) {
-      p = s.nextElementSibling;
-      div.appendChild(s);
-    }
-
-    parent.replaceChild(details, header);
-    details.insertAdjacentElement('afterbegin', header);
-
-    // Expand a details element when hovering over it
-    header.addEventListener('mouseenter', () => {
-      !scrollLock && focusOnDetails(details);
-    });
-    // details.addEventListener('click', () => {
-    //   focusedDetails = details;
-    // });
-  });
-  document.readyState = 'complete';
-}
-
-var focusedDetails;
-var scrollLock = false;
-
-var focusOnDetails = (details, scroll = 'follow') => {
-  if (
-    scrollLock && focusedDetails
-    && findNext(details) !== focusedDetails
-    && findPrev(details) !== focusedDetails
-  ) {
-    focusedDetails = details;
-    return;
-  } 
-
-  scrollLock = true;
-  details.open = true;
-
-  const rect1 = details.getBoundingClientRect();
-  while (focusedDetails && !focusedDetails.contains(details)) {
-    focusedDetails.open = false;
-    focusedDetails = focusedDetails.parentElement.closest('details');
-  }
-  for (p = details.parentElement; p.tagName !== 'BODY'; p = p.parentElement) {
-    if (p.tagName === 'DETAILS') p.open = true;
-  }
-  focusedDetails = details;
-
-  setTimeout(() => { scrollLock = false; }, 500);
-
-  if (scroll == 'center') {
-    return details.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  const rect2 = details.getBoundingClientRect();
-
-  // keep the top of the section at the same position
-  var dy = 0;
-  if (rect2.top < rect1.top && details.firstChild.firstChild.tagName === 'H2') {
-    dy += rect2.bottom - rect1.top - 30;
-    focusedDetails = details.lastChild.lastChild;
-  }
-  else if (rect2.bottom > window.innerHeight) {
-    dy += Math.min(rect2.top, rect2.bottom - window.innerHeight);
-  }
-
-  if (Math.abs(dy) > 200) {
-    window.scrollBy({ top: dy, behavior: 'smooth' });
-  } else scrollLock = false;
-}
-
-function findNext(elm) {
-  tag = elm.tagName;
-
-  function getNextNode(node) {
-    if (node.firstChild) return node.firstChild;
-    while (node) {
-      if (node.nextSibling) return node.nextSibling;
-      node = node.parentNode;
-    }
-    return null;
-  }
-
-  let node = getNextNode(elm);
-
-  while (node) {
-    if (node.nodeType === 1 && node.tagName === tag) {
-      return node;
-    }
-    node = getNextNode(node);
-  }
-
-  return null;
-}
-
-function findPrev(elm) {
-  tag = elm.tagName;
-
-  function getPreviousNode(node) {
-    if (node.previousSibling) {
-      node = node.previousSibling;
-      while (node && node.lastChild) {
-        node = node.lastChild;
-      }
-      return node;
-    }
-    return node.parentNode;
-  }
-
-  let node = getPreviousNode(elm);
-
-  while (node) {
-    if (node.nodeType === 1 && node.tagName === tag) {
-      return node;
-    }
-    node = getPreviousNode(node);
-  }
-
-  return null;
 }
 
 var render = (md) => {
@@ -292,8 +154,13 @@ var render = (md) => {
 }
 
 function mount() {
-  $('pre').style.display = 'none'
-  var md = $('pre').innerText
+  try {
+    $('pre').style.display = 'none'
+    var md = $('pre').innerText
+  } catch (e) {
+    state.html = $('body').innerHTML
+    var md = ''
+  }
   favicon()
 
   m.mount($('body'), {

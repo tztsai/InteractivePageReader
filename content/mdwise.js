@@ -1,24 +1,10 @@
 function cleanHtml() {
-  const doc = window.document;
-  doc.querySelectorAll(
-    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"], figure, table, .js-header-wrapper, .js-header, .js-site-search'
+  window.document.querySelectorAll(
+    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"], figure, table'
   ).forEach(e => e.remove());
-
-  chrome.runtime.sendMessage(
-    { message: 'readability' },
-    ([{ result }]) => {
-      if (result.err) {
-        console.error('Error parsing content:', error);
-        html = doc.querySelector('article') || doc.querySelector('main');
-        if (html) doc.body.innerHTML = html.outerHTML;
-      } else {
-        doc.body.outerHTML = result.content;
-      }
-    }
-  );
 }
 
-async function generateSummaries(text) {
+async function generateSummaries(html) {
   const prompt = `For each <details> element with an ID at different levels in the provided HTML document, if it contains a long text, generate a concise summary of its content. You can include <a> links in your summary that reference relevant headers within the document.
 
   Each summary should strictly follow the format \`#ID: Summary\`, with each one separated by **two new lines**. Ensure there are no unnecessary HTML tags or triple backticks in your response. Never put two summaries in the same line.
@@ -29,6 +15,15 @@ async function generateSummaries(text) {
 
   #id-12345: Summary of id-12345. Refer to <a href="#a-header">A Header</a>.
   `
+
+  html = DOMParser.parseFromString(html, 'text/html');
+  
+  // remove unnecessary elements to reduce query length
+  for (  // remove all elements before the first header
+    s = html.querySelector('h1')?.previousElementSibling;
+    s; s = s.previousElementSibling
+  ) { s.remove(); }
+  html.querySelectorAll('script, style, link, meta, noscript, nav, span, footer, div[role="navigation"], figure, table').forEach(e => e.remove());
 
   const fillSummary = (output, done) => {
     // output = output.replace(/\s*```\s*[a-z]*\s*/g, '');
@@ -59,68 +54,61 @@ async function generateSummaries(text) {
 };
 
 function writeSummary(details, txt) {
-  if (!txt) {
-    var summary = document.createElement('summary');
-    // move header into summary
-    details.insertBefore(summary, details.firstChild);
-    summary.appendChild(details.children[1]);
-  } else {
-    var summary = details.querySelector('summary');
+  const summary = details.querySelector('summary');
 
-    const p = document.createElement('p');
-    p.textContent = txt.trim();
-    summary.appendChild(p);
+  const p = document.createElement('p');
+  p.textContent = txt.trim();
+  summary.appendChild(p);
 
-    const qa = document.createElement('div');
-    qa.className = 'ai-qa';
-    qa.style.display = 'none';
-    summary.appendChild(qa);
+  const qa = document.createElement('div');
+  qa.className = 'ai-qa';
+  qa.style.display = 'none';
+  summary.appendChild(qa);
 
-    function createInput() {
-      const input = document.createElement('input');
-      input.placeholder = 'Ask AI';
-      qa.insertAdjacentElement('afterbegin', input);
+  function createInput() {
+    const input = document.createElement('input');
+    input.placeholder = 'Ask AI';
+    qa.insertAdjacentElement('afterbegin', input);
 
-      input.addEventListener('keydown', async (e) => {
-        console.warn(JSON.stringify(e));
+    input.addEventListener('keydown', async (e) => {
+      console.warn(JSON.stringify(e));
 
-        e.stopPropagation();
-        if (e.key === ' ') {
-          e.preventDefault(); input.value += ' ';
-        }
-  
-        if (e.key === 'Enter' && input.value.trim()) {
-          // remove all siblings following the input
-          while (input.previousElementSibling)
-            input.previousElementSibling.remove();
-  
-          const question = input.value.trim();
-          const prompt = `Write a short answer given the following information:
+      e.stopPropagation();
+      if (e.key === ' ') {
+        e.preventDefault(); input.value += ' ';
+      }
+
+      if (e.key === 'Enter' && input.value.trim()) {
+        // remove all siblings following the input
+        while (input.previousElementSibling)
+          input.previousElementSibling.remove();
+
+        const question = input.value.trim();
+        const prompt = `Write a short answer given the following information:
           ${details.textContent}`;
-  
-          const ans = document.createElement('p');
-          qa.insertBefore(ans, input.nextElementSibling);
-  
-          await getAIResponse(question, prompt,
-            (output, _) => {
-              return ans.textContent = output;
-            });
-          
-          createInput();
-          update();  // render the new content
-        }
-      });
-      return input;
-    }
-    
-    summary.addEventListener('mouseenter', () => {
-      qa.style.display = 'block';
+
+        const ans = document.createElement('p');
+        qa.insertBefore(ans, input.nextElementSibling);
+
+        await getAIResponse(question, prompt,
+          (output, _) => {
+            return ans.textContent = output;
+          });
+
+        createInput();
+        update();  // render the new content
+      }
     });
-    summary.addEventListener('mouseleave', () => {
-      qa.style.display = 'none';
-    });
-    createInput();
+    return input;
   }
+
+  summary.addEventListener('mouseenter', () => {
+    qa.style.display = 'block';
+  });
+  summary.addEventListener('mouseleave', () => {
+    qa.style.display = 'none';
+  });
+  createInput();
 }
 
 async function getAIResponse(text, prompt, callback = (s, d) => s) {
@@ -143,7 +131,7 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
     });
   });
 
-  console.warn('Generation started.\nQuery:', text.slice(0, 300), 
+  console.warn('Generation started.\nQuery:', text.slice(0, 300),
     '\nPrompt:', prompt.slice(0, 500));
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -194,33 +182,165 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
   return output;
 }
 
+var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
+  document.querySelectorAll(selector).forEach(header => {
+    const parent = header.parentNode;
+    if (parent.tagName === 'SUMMARY') return;
+
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    details.appendChild(summary);
+
+    if (header.tagName <= 'H3') {
+      details.id = 'id-' + Math.random().toString(36).substring(2, 7);
+    }
+
+    const div = document.createElement('div');
+    details.appendChild(div);
+
+    for (
+      let s = header.nextElementSibling, p;
+      s && (!/^H[1-6]$/.test(s.tagName) || s.tagName > header.tagName);
+      s = p
+    ) {
+      p = s.nextElementSibling;
+      div.appendChild(s);
+    }
+
+    parent.replaceChild(details, header);
+    summary.appendChild(header);
+
+    // Expand a details element when hovering over it
+    header.addEventListener('mouseenter', () => {
+      !scrollLock && focusOnDetails(details);
+    });
+    // details.addEventListener('click', () => {
+    //   focusedDetails = details;
+    // });
+  });
+  document.readyState = 'complete';
+}
+
+var focusedDetails;
+var scrollLock = false;
+
+var focusOnDetails = (details, scroll = 'follow') => {
+  if (
+    scrollLock && focusedDetails
+    && findNext(details) !== focusedDetails
+    && findPrev(details) !== focusedDetails
+  ) {
+    focusedDetails = details;
+    return;
+  }
+
+  scrollLock = true;
+  details.open = true;
+
+  const rect1 = details.getBoundingClientRect();
+  while (focusedDetails && !focusedDetails.contains(details)) {
+    focusedDetails.open = false;
+    focusedDetails = focusedDetails.parentElement.closest('details');
+  }
+  for (p = details.parentElement; p.tagName !== 'BODY'; p = p.parentElement) {
+    if (p.tagName === 'DETAILS') p.open = true;
+  }
+  focusedDetails = details;
+
+  setTimeout(() => { scrollLock = false; }, 500);
+
+  if (scroll == 'center') {
+    return details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  const rect2 = details.getBoundingClientRect();
+
+  // keep the top of the section at the same position
+  var dy = 0;
+  if (rect2.top < rect1.top && details.firstChild.firstChild.tagName === 'H2') {
+    dy += rect2.bottom - rect1.top - 30;
+    focusedDetails = details.lastChild.lastChild;
+  }
+  else if (rect2.bottom > window.innerHeight) {
+    dy += Math.min(rect2.top, rect2.bottom - window.innerHeight);
+  }
+
+  if (Math.abs(dy) > 200) {
+    window.scrollBy({ top: dy, behavior: 'smooth' });
+  } else scrollLock = false;
+}
+
+function findNext(elm) {
+  tag = elm.tagName;
+
+  function getNextNode(node) {
+    if (node.firstChild) return node.firstChild;
+    while (node) {
+      if (node.nextSibling) return node.nextSibling;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  let node = getNextNode(elm);
+
+  while (node) {
+    if (node.nodeType === 1 && node.tagName === tag) {
+      return node;
+    }
+    node = getNextNode(node);
+  }
+
+  return null;
+}
+
+function findPrev(elm) {
+  tag = elm.tagName;
+
+  function getPreviousNode(node) {
+    if (node.previousSibling) {
+      node = node.previousSibling;
+      while (node && node.lastChild) {
+        node = node.lastChild;
+      }
+      return node;
+    }
+    return node.parentNode;
+  }
+
+  let node = getPreviousNode(elm);
+
+  while (node) {
+    if (node.nodeType === 1 && node.tagName === tag) {
+      return node;
+    }
+    node = getPreviousNode(node);
+  }
+
+  return null;
+}
+
 (async () => {
   // clean the HTML content
   cleanHtml();
-  // convert the page to markdown
+
+  // convert the HTML content to markdown
   chrome.runtime.sendMessage(
-    { message: 'turndown', content: document.body.innerHTML },
-    ({ html: [{ result }], tabId }) => {
-      document.body.innerHTML = result;
-      // inject the markdown renderer
-      chrome.runtime.sendMessage({ message: 'inject', tabId })
-    }
+    { message: 'to-markdown' },
+    (res) => chrome.runtime.sendMessage({ message: 'inject', tabId: res.tabId })
   );
+
   // wait for the document loading and rendering to complete
-  var timeout = setInterval(() => {
+  var interval = setInterval(() => {
     if (document.readyState === 'complete') {
-      clearInterval(timeout);
-      let html = document.getElementById('_html');
-      if (!html) return;
+      clearInterval(interval);
 
-      for (  // remove all elements before the first header
-        s = html.querySelector('h1')?.previousElementSibling;
-        s; s = s.previousElementSibling
-      ) { s.remove(); }
-      const content = html.innerHTML;
+      // get the HTML content after rendering
+      const content = document.getElementById('_html')?.innerHTML;
+      if (!content) return;
 
-      // add summaries to the details elements
-      html.querySelectorAll('details').forEach(d => writeSummary(d));
+      // add details & summary tags to each section separated by headers
+      makeFoldable();
 
       // convert the markdown content to text
       if (state.content.ai)

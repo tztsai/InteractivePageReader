@@ -13,13 +13,13 @@ md.inject = ({storage: {state}}) => (id) => {
       icon: state.settings.icon,
     }],
     func: (_args) => {
+      args = _args
       pre = document.querySelector('pre');
       if (!pre) {
         console.error('No <pre> element found');
         return;
       }
       pre.style.visibility = 'hidden'
-      args = _args
     },
     injectImmediately: true
   })
@@ -36,6 +36,8 @@ md.inject = ({storage: {state}}) => (id) => {
     target: {tabId: id},
     files: [
       '/vendor/mithril.min.js',
+      '/vendor/readability.min.js',
+      '/vendor/turndown.min.js',
       state.content.syntax && ['/vendor/prism.min.js', '/vendor/prism-autoloader.min.js', '/content/prism.js'],
       state.content.emoji && '/content/emoji.js',
       state.content.mermaid && ['/vendor/mermaid.min.js', '/vendor/panzoom.min.js', '/content/mermaid.js'],

@@ -47,44 +47,27 @@ md.messages = ({ storage: { defaults, state, set }, compilers, mathjax, xhr, web
         injectImmediately: true
       }, sendResponse)
     }
-    else if (req.message === 'turndown') {
+    else if (req.message === 'to-markdown') {
       chrome.scripting.executeScript({
         target: { tabId: sender.tab.id },
-        files: ['/vendor/turndown.min.js'],
-        injectImmediately: true
-      }, () => {
-        chrome.scripting.executeScript({
-          target: { tabId: sender.tab.id },
-          func: (content) => {
-            const turndownService = new TurndownService();
-            turndownService.remove(
-              ['input', 'textarea', 'form', 'aside', 'nav', 'button', 'canvas', 'audio', 'video', 'label', 'datalist', 'keygen', 'output', 'progress', 'meter', 'menu', 'menuitem']
-            );
-            md = turndownService.turndown(content)
-                //  .replace(/^(#*\s*)\[(\s*\n)+/gm, '$1[');
-            return `<pre>${md}</pre>`;
-          },
-          args: [req.content]
-        }, (html) => sendResponse({ tabId: sender.tab.id, html }));
-      }, sendResponse);
-    }
-    else if (req.message === 'readability') {
-      chrome.scripting.executeScript({
-        target: { tabId: sender.tab.id },
-        files: ['/vendor/readability.min.js'],
-        injectImmediately: true
+        files: ['/vendor/readability.min.js', '/vendor/turndown.min.js'],
       }, () => {
         chrome.scripting.executeScript({
           target: { tabId: sender.tab.id },
           func: () => {
             try {
-              return new Readability(document).parse();
+              // let content = new Readability(document).parse().content;
+              let content = document.body;
+              content = new TurndownService().turndown(content);
+              content = `<pre>${content}</pre>`;
+              document.body.innerHTML = content;
             } catch (err) {
-              return { err };
+              console.error('Readability error:', err);
             }
           }
         }, sendResponse);
-      }, sendResponse);
+        sendResponse({ tabId: sender.tab.id });
+      });
     }
     else if (req.message === 'inject') {
       md.inject({ storage: { state } })(req.tabId);
