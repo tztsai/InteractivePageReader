@@ -14,7 +14,7 @@ details {
   margin-top: 0;
 
   div.h2 {
-    max-height: 800px;
+    max-height: 720px;
     overflow: auto;
   }
 }
@@ -32,7 +32,6 @@ details summary {
   h5,
   h6 {
     display: inline;
-    width: 70%;
   }
 
   p {

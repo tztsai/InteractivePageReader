@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name"            : "MDwise Page Reader",
-  "version"         : "5.3",
+  "version"         : "1.0",
   "description"     : "Dark Mode • Themes • Autoreload • Mermaid Diagrams • MathJax • ToC • Syntax Highlighting",
 
   "homepage_url": "https://github.com/simov/markdown-viewer",
