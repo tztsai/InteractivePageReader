@@ -7,13 +7,16 @@ cd "$(dirname "$0")"
 npm ci 2> /dev/null || npm i
 
 # # turndown.min.js
-# npx rollup --config rollup.mjs --input turndown.mjs --file turndown.js
+npx rollup --config rollup.mjs --input turndown.mjs --file turndown.js
 
-# # Replace the function containing `require` with the async function
-# sed -i '/var domino = require('"'"'@mixmark-io\/domino'"'"');/ {
-#     N
-#     s/var domino = require('"'"'@mixmark-io\/domino'"'"');\n\s*Parser.prototype.parseFromString = function (string) {/Parser.prototype.parseFromString = async function (string) {\n        var domino = await import("\/vendor\/domino.min.js");/
-# }' turndown.js
+# FIXIT: replace domino require with import
+# awk '/var domino = require('\''@mixmark-io\/domino'\'');/ {
+#     printf "%s\n", $0
+#     getline
+#     printf "Parser.prototype.parseFromString = async function (string) {\n"
+#     printf "        var domino = await import(\"\/vendor\/domino.min.js\");\n"
+#     next
+# } { print }' turndown.js > turndown_temp.js && mv turndown_temp.js turndown.js
 
 npx terser --compress --mangle -- turndown.js > ../../vendor/turndown.min.js
 
