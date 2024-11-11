@@ -52,8 +52,22 @@
 
   "permissions": [
     "storage",
-    "scripting"
+    "scripting",
+    "contextMenus",
+    "tabs",
+    "commands"
   ],
+
+  "commands": {
+    "convert-to-markdown": {
+      "suggested_key": {
+        "default": "Ctrl+M",
+        "mac": "MacCtrl+M"
+      },
+      "description": "Convert Web Page to Interactive Markdown",
+      "global": true
+    }
+  },
 
   "host_permissions": [
     "file:///*"
