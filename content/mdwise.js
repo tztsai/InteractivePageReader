@@ -196,6 +196,7 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
     }
 
     const div = document.createElement('div');
+    div.classList.add('foldable', header.tagName.toLowerCase());
     details.appendChild(div);
 
     for (

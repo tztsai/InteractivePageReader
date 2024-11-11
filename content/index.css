@@ -13,8 +13,8 @@ details {
   margin-bottom: -24;
   margin-top: 0;
 
-  h2 {
-    max-height: 1000px;
+  div.h2 {
+    max-height: 800px;
     overflow: auto;
   }
 }
