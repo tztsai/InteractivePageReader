@@ -233,6 +233,7 @@
     },
 
     replacement: function (content, node) {
+      content = content.replace(/\n/gm, '\t');
       var href = node.getAttribute('href');
       if (href) href = href.replace(/([()])/g, '\\$1');
       var title = cleanAttribute(node.getAttribute('title'));
@@ -256,6 +257,7 @@
       if (title) title = ' "' + title + '"';
       var replacement;
       var reference;
+      content = content.replace(/\n/gm, '\t');
 
       switch (options.linkReferenceStyle) {
         case 'collapsed':

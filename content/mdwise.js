@@ -1,13 +1,19 @@
 function cleanHtml() {
+  if (main = document.querySelector('main')) {
+    document.body.innerHTML = main.innerHTML;
+  }
   if (articles = document.querySelectorAll('article')) {
     document.body.innerHTML = '';
-    articles.forEach(e => document.body.appendChild(e));
-  } else if (main = document.querySelector('main')) {
-    document.body.innerHTML = main.innerHTML;
+    for (e of articles) {
+      if (e.textContent.trim().length > 20) {
+        document.body.appendChild(e);
+      }
+    }
   }
   document.querySelectorAll(
     'link, style, script, meta, noscript, header, nav, span, footer, figure, table'
   ).forEach(e => e.remove());
+  
 }
 
 async function generateSummaries(html) {

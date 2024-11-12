@@ -4,10 +4,10 @@
 cd "$(dirname "$0")"
 
 # before
-npm ci 2> /dev/null || npm i
+# npm ci 2> /dev/null || npm i
 
 # # turndown.min.js
-npx rollup --config rollup.mjs --input turndown.mjs --file turndown.js
+# npx rollup --config rollup.mjs --input turndown.mjs --file turndown.js
 
 # FIXIT: replace domino require with import
 # awk '/var domino = require('\''@mixmark-io\/domino'\'');/ {
@@ -21,4 +21,4 @@ npx rollup --config rollup.mjs --input turndown.mjs --file turndown.js
 npx terser --compress --mangle -- turndown.js > ../../vendor/turndown.min.js
 
 # after
-rm -rf node_modules/
+# rm -rf node_modules/
