@@ -53,9 +53,9 @@
       ],
       "resources": [
         "/content/anchor.svg",
-        "/icons/default/16x16.png",
-        "/icons/dark/16x16.png",
-        "/icons/light/16x16.png",
+        "/icons/default/favicon.ico",
+        "/icons/dark/favicon.ico",
+        "/icons/light/favicon.ico",
         "/themes/*",
         "/vendor/mathjax/fonts/*",
         "/vendor/prism.min.css",

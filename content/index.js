@@ -283,7 +283,7 @@ var frontmatter = (md) => {
 var favicon = () => {
   var favicon = document.createElement('link')
   favicon.rel = 'icon'
-  favicon.href = chrome.runtime.getURL(`/icons/${state.icon}/16x16.png`)
+  favicon.href = chrome.runtime.getURL(`/icons/${state.icon}/favicon.ico`)
   $('head').appendChild(favicon)
 }
 
