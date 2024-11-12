@@ -38,16 +38,12 @@ importScripts('/background/icon.js')
 
   var mdWise = (tab) => {
     inject(tab.id);
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["/content/mdwise.js", "/content/index.js"]
-    })
   }
   
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
       id: "md-wise",
-      title: "Too Long Read It Short",
+      title: "Assist Me To Read",
       contexts: ["page"]
     });
   });

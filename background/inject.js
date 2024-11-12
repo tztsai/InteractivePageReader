@@ -18,9 +18,6 @@ md.inject = ({ storage: { state } }) => (id) => {
       pre = document.querySelector('pre');
       if (pre) {
         pre.style.visibility = 'hidden'
-        return
-      } else {
-        console.warn('No <pre> element found');
       }
     },
     injectImmediately: true
@@ -44,6 +41,7 @@ md.inject = ({ storage: { state } }) => (id) => {
       state.content.emoji && '/content/emoji.js',
       state.content.mermaid && ['/vendor/mermaid.min.js', '/vendor/panzoom.min.js', '/content/mermaid.js'],
       state.content.mathjax && ['/content/mathjax.js', '/vendor/mathjax/tex-mml-chtml.js'],
+      '/content/mdwise.js',
       '/content/index.js',
       '/content/scroll.js',
       state.content.autoreload && '/content/autoreload.js',

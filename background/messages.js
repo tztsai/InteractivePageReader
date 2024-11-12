@@ -53,12 +53,10 @@ md.messages = ({ storage: { defaults, state, set }, compilers, mathjax, xhr, web
         // files: ['/vendor/readability.min.js', '/vendor/turndown.min.js'],
         func: () => {
           try {
-            document.readyState = 'loading';
             // let content = new Readability(document).parse().content;
             let content = document.body;
             content = new TurndownService().turndown(content);
             document.body.innerHTML = `<pre>${content}</pre>`;
-            document.readyState = 'complete';
             return { content };
           } catch (err) {
             console.error('Readability error:', err);

@@ -169,6 +169,7 @@ function mount() {
     $('pre').style.display = 'none'
     var md = $('pre').innerText
   } catch (e) {
+    console.error('No <pre> element found')
     state.html = $('body').innerHTML
     var md = ''
   }
@@ -298,17 +299,15 @@ if (!document.querySelector('pre')) {
   // clean the HTML content
   cleanHtml();
   // convert the HTML content to markdown
-  chrome.runtime.sendMessage({ message: 'to-markdown' });
-}
-
-if (document.readyState === 'complete') {
-  mount()
-}
-else {
+  chrome.runtime.sendMessage(
+    { message: 'to-markdown' },
+    (_) => mount()
+  );
+} else {
   var timeout = setInterval(() => {
     if (document.readyState === 'complete') {
       clearInterval(timeout)
       mount()
     }
-  }, 0)
+  })
 }

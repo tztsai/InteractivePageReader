@@ -1,6 +1,12 @@
 function cleanHtml() {
-  window.document.querySelectorAll(
-    'link, style, script, meta, noscript, header, nav, span, footer, div[role="navigation"], figure, table'
+  if (articles = document.querySelectorAll('article')) {
+    document.body.innerHTML = '';
+    articles.forEach(e => document.body.appendChild(e));
+  } else if (main = document.querySelector('main')) {
+    document.body.innerHTML = main.innerHTML;
+  }
+  document.querySelectorAll(
+    'link, style, script, meta, noscript, header, nav, span, footer, figure, table'
   ).forEach(e => e.remove());
 }
 
