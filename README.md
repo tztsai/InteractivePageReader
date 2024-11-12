@@ -321,14 +321,6 @@ Note that in any of the following cases you won't receive any future updates aut
 4. Make sure that the `Developer mode` switch is enabled
 5. Click on the `Load unpacked` button and select the cloned directory
 
-## Manifest v2
-
-1. Clone the [mv2] or [compilers-mv2] branch (Markdown Viewer v4.0)
-2. Navigate to `chrome://extensions`
-3. Make sure that the `Developer mode` switch is enabled
-4. Click on the `Load unpacked` button and select the cloned directory
-
-
   <!-- [chrome]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
   [firefox]: https://addons.mozilla.org/en-US/firefox/addon/markdown-viewer-chrome/
   [edge]: https://microsoftedge.microsoft.com/addons/detail/markdown-viewer/cgfmehpekedojlmjepoimbfcafopimdg
