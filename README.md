@@ -1,30 +1,25 @@
+# MDwise Page Reader / Browser Extension
 
-# Markdown Viewer / Browser Extension
-
-**Install: [Chrome]** / **[Firefox]** / **[Edge]** / **[Opera]**  / **[Brave]** / **[Chromium]** / **[Vivaldi]**
+**Install: [Chrome]** / **[Firefox]** / **[Edge]** / **[Opera]** / **[Brave]** / **[Chromium]** / **[Vivaldi]**
 
 # Features
 
-- Secure by design
-- Render local and remote file URLs
-- Granular access to remote origins
-- Multiple markdown parsers
-- Full control over the compiler options ([markdown-it], [marked], [remark])
-- 30+ Themes ([cleanrmd], [GitHub][github-theme])
-- Custom theme support
-- GitHub Flavored Markdown (GFM)
-- Auto reload on file change
-- Syntax highlighted code blocks ([prism][prism])
+- Convert web pages into interactive markdown format
+- AI generate section-wise summaries
+- Interactive Q&A within summaries
 - Table of Contents (ToC)
+- Context menu and keyboard shortcut for converting web pages
 - MathJax formulas ([mathjax])
 - Mermaid diagrams ([mermaid])
-- Convert emoji shortnames (icons provided free by [EmojiOne][emojione])
+- 30+ Themes ([cleanrmd], [GitHub][github-theme])
+- Custom theme support
+- Auto reload on file change
 - Remember scroll position
-- Markdown Content-Type detection
-- Configurable Markdown file path detection
-- Settings synchronization
+- Full control over the compiler options ([markdown-it], [marked], [remark])
+- Syntax highlighted code blocks ([prism][prism])
+- Convert emoji shortnames (icons provided free by [EmojiOne][emojione])
+- Configurable Markdown URL & file path detection
 - Raw and rendered markdown views
-- Free and Open Source
 
 # Table of Contents
 
@@ -88,36 +83,36 @@ The `auto` option on the `github` and `github-dark` themes has a fixed width wit
 
 Full **CommonMark** support including **GFM** tables and strikethrough **+**
 
-| Option         | Default | Description
-| :-             | :-:     | :-
-| **abbr**       | `false` | Abbreviation using `*[word]: Text` `<abbr>`
-| **attr**       | `false` | Custom attributes using `{}` curly brackets
-| **breaks**     | `false` | Convert new lines `\n` in paragraphs into line breaks `<br>`
-| **cjk**        | `false` | Suppress linebreaks between east asian characters
-| **deflist**    | `false` | Definition list `<dl>`
-| **footnote**   | `false` | Footnotes `[^1]` `[^1]: a`
-| **html**       | **`true`**  | Enable HTML tags in source
-| **ins**        | `false` | Inserted text `++a++` `<ins>`
-| **linkify**    | **`true`**  | Autoconvert URL-like text to links
-| **mark**       | `false` | Marked text `==a==` `<mark>`
-| **sub**        | `false` | Subscript `~a~` `<sub>`
-| **sup**        | `false` | Superscript `^a^` `<sup>`
-| **tasklists**  | `false` | Task lists `- [x]`
-| **typographer**| `false` | Enable some language-neutral replacement + quotes beautification
-| **xhtmlOut**   | `false` | Use `/` to close single tags (`<br />`)
+| Option          |  Default   | Description                                                      |
+| :-------------- | :--------: | :--------------------------------------------------------------- |
+| **abbr**        |  `false`   | Abbreviation using `*[word]: Text` `<abbr>`                      |
+| **attr**        |  `false`   | Custom attributes using `{}` curly brackets                      |
+| **breaks**      |  `false`   | Convert new lines `\n` in paragraphs into line breaks `<br>`     |
+| **cjk**         |  `false`   | Suppress linebreaks between east asian characters                |
+| **deflist**     |  `false`   | Definition list `<dl>`                                           |
+| **footnote**    |  `false`   | Footnotes `[^1]` `[^1]: a`                                       |
+| **html**        | **`true`** | Enable HTML tags in source                                       |
+| **ins**         |  `false`   | Inserted text `++a++` `<ins>`                                    |
+| **linkify**     | **`true`** | Autoconvert URL-like text to links                               |
+| **mark**        |  `false`   | Marked text `==a==` `<mark>`                                     |
+| **sub**         |  `false`   | Subscript `~a~` `<sub>`                                          |
+| **sup**         |  `false`   | Superscript `^a^` `<sup>`                                        |
+| **tasklists**   |  `false`   | Task lists `- [x]`                                               |
+| **typographer** |  `false`   | Enable some language-neutral replacement + quotes beautification |
+| **xhtmlOut**    |  `false`   | Use `/` to close single tags (`<br />`)                          |
 
 ---
 
 # Content Options
 
-| Option         | Default | Description
-| :-             | :-:     | :-
-| **autoreload** | `false` | Auto reload on file change
-| **emoji**      | `false` | Convert emoji `:shortnames:` into EmojiOne images
-| **mathjax**    | `false` | Render MathJax formulas
-| **mermaid**    | `false` | Render Mermaid diagrams
-| **syntax**     | **`true`**  | Syntax highlighted fenced code blocks
-| **toc**        | `false` | Generate Table of Contents
+| Option         |  Default   | Description                                       |
+| :------------- | :--------: | :------------------------------------------------ |
+| **autoreload** |  `false`   | Auto reload on file change                        |
+| **emoji**      |  `false`   | Convert emoji `:shortnames:` into EmojiOne images |
+| **mathjax**    |  `false`   | Render MathJax formulas                           |
+| **mermaid**    |  `false`   | Render Mermaid diagrams                           |
+| **syntax**     | **`true`** | Syntax highlighted fenced code blocks             |
+| **toc**        |  `false`   | Generate Table of Contents                        |
 
 ## Autoreload
 
@@ -333,40 +328,14 @@ Note that in any of the following cases you won't receive any future updates aut
 3. Make sure that the `Developer mode` switch is enabled
 4. Click on the `Load unpacked` button and select the cloned directory
 
----
 
-# License
-
-The MIT License (MIT)
-
-Copyright (c) 2013-present, Simeon Velichkov <simeonvelichkov@gmail.com> (https://github.com/simov/markdown-viewer)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
-  [chrome]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
+  <!-- [chrome]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
   [firefox]: https://addons.mozilla.org/en-US/firefox/addon/markdown-viewer-chrome/
   [edge]: https://microsoftedge.microsoft.com/addons/detail/markdown-viewer/cgfmehpekedojlmjepoimbfcafopimdg
   [opera]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
   [brave]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
   [chromium]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
-  [vivaldi]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
+  [vivaldi]: https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk -->
 
   [marked]: https://github.com/markedjs/marked
   [remark]: https://github.com/remarkjs/remark
