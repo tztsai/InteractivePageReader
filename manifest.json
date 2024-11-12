@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name"            : "MDwise Page Reader",
+  "version"         : "1.0",
+  "description"     : "Dark Mode • Themes • Autoreload • Mermaid Diagrams • MathJax • ToC • Syntax Highlighting",
+
+  "homepage_url": "https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk",
+
+  "icons": {
+    "96" : "/icons/default/favicon-96x96.png"
+  },
+
+  "action": {
+    "default_icon": {
+      "192" : "/icons/default/web-app-manifest-192x192.png"
+    },
+    "default_title": "MDwise Page Reader",
+    "default_popup": "/popup/index.html"
+  },
+
+  "background" : {
+    "service_worker": "/background/index.js"
+  },
+
+  "options_page": "/options/index.html",
+
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "/content/anchor.svg",
+        "/icons/default/16x16.png",
+        "/icons/dark/16x16.png",
+        "/icons/light/16x16.png",
+        "/themes/*",
+        "/vendor/mathjax/fonts/*",
+        "/vendor/prism.min.css",
+        "/vendor/prism-okaidia.min.css"
+      ]
+    }
+  ],
+
+  "permissions": [
+    "storage",
+    "scripting",
+    "contextMenus",
+    "commands"
+  ],
+
+  "commands": {
+    "md-wise": {
+      "suggested_key": {
+        "default": "Ctrl+M"
+      },
+      "description": "Convert Web Page to Interactive Markdown",
+      "global": true
+    }
+  },
+
+  "host_permissions": [
+    "file:///*"
+  ],
+
+  "optional_host_permissions": [
+    "*://*/"
+  ]
+}

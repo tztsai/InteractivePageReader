@@ -50,28 +50,22 @@ md.messages = ({ storage: { defaults, state, set }, compilers, mathjax, xhr, web
     else if (req.message === 'to-markdown') {
       chrome.scripting.executeScript({
         target: { tabId: sender.tab.id },
-        files: ['/vendor/readability.min.js', '/vendor/turndown.min.js'],
-      }, () => {
-        chrome.scripting.executeScript({
-          target: { tabId: sender.tab.id },
-          func: () => {
-            try {
-              // let content = new Readability(document).parse().content;
-              let content = document.body;
-              content = new TurndownService().turndown(content);
-              content = `<pre>${content}</pre>`;
-              document.body.innerHTML = content;
-            } catch (err) {
-              console.error('Readability error:', err);
-            }
+        // files: ['/vendor/readability.min.js', '/vendor/turndown.min.js'],
+        func: () => {
+          try {
+            document.readyState = 'loading';
+            // let content = new Readability(document).parse().content;
+            let content = document.body;
+            content = new TurndownService().turndown(content);
+            document.body.innerHTML = `<pre>${content}</pre>`;
+            document.readyState = 'complete';
+            return { content };
+          } catch (err) {
+            console.error('Readability error:', err);
+            return { error: err.message };
           }
-        }, sendResponse);
-        sendResponse({ tabId: sender.tab.id });
-      });
-    }
-    else if (req.message === 'inject') {
-      md.inject({ storage: { state } })(req.tabId);
-      sendResponse();
+        }
+      }, sendResponse);
     }
 
     // popup

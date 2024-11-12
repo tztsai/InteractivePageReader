@@ -1,8 +1,8 @@
 
-md.inject = ({storage: {state}}) => (id) => {
+md.inject = ({ storage: { state } }) => (id) => {
 
   chrome.scripting.executeScript({
-    target: {tabId: id},
+    target: { tabId: id },
     args: [{
       theme: state.theme,
       raw: state.raw,
@@ -13,19 +13,21 @@ md.inject = ({storage: {state}}) => (id) => {
       icon: state.settings.icon,
     }],
     func: (_args) => {
+      console.warn('Injecting content script')
       args = _args
       pre = document.querySelector('pre');
-      if (!pre) {
-        console.error('No <pre> element found');
-        return;
+      if (pre) {
+        pre.style.visibility = 'hidden'
+        return
+      } else {
+        console.warn('No <pre> element found');
       }
-      pre.style.visibility = 'hidden'
     },
     injectImmediately: true
   })
 
   chrome.scripting.insertCSS({
-    target: {tabId: id},
+    target: { tabId: id },
     files: [
       '/content/index.css',
       '/content/themes.css',
@@ -33,7 +35,7 @@ md.inject = ({storage: {state}}) => (id) => {
   })
 
   chrome.scripting.executeScript({
-    target: {tabId: id},
+    target: { tabId: id },
     files: [
       '/vendor/mithril.min.js',
       '/vendor/readability.min.js',

@@ -96,8 +96,6 @@ var onupdate = {
 }
 
 var update = (update) => {
-  document.readyState = 'interactive';
-
   scroll(update)
 
   if (state.content.toc) {
@@ -125,6 +123,19 @@ var update = (update) => {
   if (state.content.mathjax) {
     setTimeout(() => mj.render(), 60)
   }
+
+  setTimeout(() => {
+    // remove all elements before the first header
+    for (s = document.querySelector('h1')?.previousElementSibling;
+      s; s = s.previousElementSibling) s.remove();
+
+    // add details & summary tags to each section separated by headers
+    makeFoldable();
+
+    // convert the markdown content to text
+    if (state.content.ai)
+      generateSummaries(document.getElementById('_html'));
+  }, 100)
 }
 
 var render = (md) => {
@@ -282,6 +293,13 @@ var _escape = (str) =>
     '>': '&gt;'
   }[tag] || tag))
 
+
+if (!document.querySelector('pre')) {
+  // clean the HTML content
+  cleanHtml();
+  // convert the HTML content to markdown
+  chrome.runtime.sendMessage({ message: 'to-markdown' });
+}
 
 if (document.readyState === 'complete') {
   mount()

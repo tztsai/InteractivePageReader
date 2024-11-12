@@ -35,33 +35,31 @@ importScripts('/background/icon.js')
 
   chrome.tabs.onUpdated.addListener(detect.tab)
   chrome.runtime.onMessage.addListener(messages)
+
+  var mdWise = (tab) => {
+    inject(tab.id);
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["/content/mdwise.js", "/content/index.js"]
+    })
+  }
   
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
-      id: "convertToMarkdown",
-      title: "Convert to Markdown",
+      id: "md-wise",
+      title: "Too Long Read It Short",
       contexts: ["page"]
     });
   });
   
   chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "convertToMarkdown") {
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ["/content/mdwise.js"]
-      });
-    }
+    if (info.menuItemId === "md-wise") mdWise(tab);
   });
 
   chrome.commands.onCommand.addListener((command) => {
-    if (command === "convert-to-markdown") {
+    if (command === "md-wise") {
       chrome.tabs.query({active: true, currentWindow: true}, ([tab]) => {
-        if (tab) {
-          chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            files: ["/content/mdwise.js"]
-          });
-        }
+        if (tab) mdWise(tab);
       });
     }
   });

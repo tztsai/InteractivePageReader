@@ -16,12 +16,7 @@ async function generateSummaries(html) {
   #id-12345: Summary of id-12345. Refer to <a href="#a-header">A Header</a>.
   `
 
-  // remove unnecessary elements to reduce query length
-  for (  // remove all elements before the first header
-    s = html.querySelector('h1')?.previousElementSibling;
-    s; s = s.previousElementSibling
-  ) { s.remove(); }
-  html.querySelectorAll('script, style, link, meta, noscript, nav, span, footer, div[role="navigation"], figure, table').forEach(e => e.remove());
+  const content = html.innerHTML;
 
   const fillSummary = (output, done) => {
     // output = output.replace(/\s*```\s*[a-z]*\s*/g, '');
@@ -48,7 +43,7 @@ async function generateSummaries(html) {
     return splits.slice(i).join('\n\n');
   }
 
-  await getAIResponse(html.innerHTML, prompt, fillSummary);
+  await getAIResponse(content, prompt, fillSummary);
 };
 
 function writeSummary(details, txt) {
@@ -213,11 +208,7 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
     header.addEventListener('mouseenter', () => {
       !scrollLock && focusOnDetails(details);
     });
-    // details.addEventListener('click', () => {
-    //   focusedDetails = details;
-    // });
   });
-  document.readyState = 'complete';
 }
 
 var focusedDetails;
@@ -318,32 +309,3 @@ function findPrev(elm) {
 
   return null;
 }
-
-(async () => {
-  // clean the HTML content
-  cleanHtml();
-
-  // convert the HTML content to markdown
-  chrome.runtime.sendMessage(
-    { message: 'to-markdown' },
-    (res) => chrome.runtime.sendMessage({ message: 'inject', tabId: res.tabId })
-  );
-
-  // wait for the document loading and rendering to complete
-  var interval = setInterval(() => {
-    if (document.readyState === 'complete') {
-      clearInterval(interval);
-
-      // get the HTML content after rendering
-      const content = document.getElementById('_html');
-      if (!content) return;
-
-      // add details & summary tags to each section separated by headers
-      makeFoldable();
-
-      // convert the markdown content to text
-      if (state.content.ai)
-        generateSummaries(content);
-    }
-  }, 500);
-})()
