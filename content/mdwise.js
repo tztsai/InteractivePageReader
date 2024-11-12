@@ -226,7 +226,7 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
 var focusedDetails;
 var scrollLock = false;
 
-var focusOnDetails = (details, scroll = 'follow') => {
+var focusOnDetails = (details) => {
   if (
     scrollLock && focusedDetails
     && findNext(details) !== focusedDetails
@@ -247,29 +247,26 @@ var focusOnDetails = (details, scroll = 'follow') => {
   for (p = details.parentElement; p.tagName !== 'BODY'; p = p.parentElement) {
     if (p.tagName === 'DETAILS') p.open = true;
   }
-  focusedDetails = details;
 
   setTimeout(() => { scrollLock = false; }, 500);
-
-  if (scroll == 'center') {
-    return details.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
 
   const rect2 = details.getBoundingClientRect();
 
   // keep the top of the section at the same position
   var dy = 0;
-  if (rect2.top < rect1.top && details.firstChild.firstChild.tagName === 'H2') {
-    dy += rect2.bottom - rect1.top - 30;
-    focusedDetails = details.lastChild.lastChild;
+  if ((!focusedDetails || rect2.top < rect1.top) &&
+       details.firstChild.firstChild.tagName === 'H2') {
+    dy += Math.min(rect2.top, rect2.height) - 10;
   }
-  else if (rect2.bottom > window.innerHeight) {
-    dy += Math.min(rect2.top, rect2.bottom - window.innerHeight);
-  }
+  // else if (rect2.bottom > window.innerHeight) {
+  //   dy += Math.min(rect2.top, rect2.bottom - window.innerHeight + 10);
+  // }
 
-  if (Math.abs(dy) > 200) {
+  if (Math.abs(dy) > 50) {
     window.scrollBy({ top: dy, behavior: 'smooth' });
   } else scrollLock = false;
+
+  focusedDetails = details;
 }
 
 function findNext(elm) {
