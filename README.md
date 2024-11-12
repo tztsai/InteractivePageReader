@@ -1,6 +1,6 @@
 # MDwise Page Reader / Browser Extension
 
-**Install: [Chrome]** / **[Firefox]** / **[Edge]** / **[Opera]** / **[Brave]** / **[Chromium]** / **[Vivaldi]**
+<!-- **Install: [Chrome]** / **[Firefox]** / **[Edge]** / **[Opera]** / **[Brave]** / **[Chromium]** / **[Vivaldi]** -->
 
 # Features
 
