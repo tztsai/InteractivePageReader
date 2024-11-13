@@ -1,1 +1,0 @@
-- [ ] Remove details IDs and use header IDs instead

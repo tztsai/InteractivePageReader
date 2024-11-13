@@ -17,18 +17,29 @@ function cleanHtml() {
 }
 
 async function generateSummaries(html) {
-  const prompt = `For each <details> element with an ID at different levels in the provided HTML document, if it contains a long text, generate a concise summary of its content. You can include <a> links in your summary that reference relevant headers within the document.
+  const prompt = `For each header element with an ID in the provided HTML document, generate a concise summary of its corresponding content (if it's too long to read quickly). You can include <a> links in your summary that reference other relevant headers or external sources within the document.
 
   Each summary should strictly follow the format \`#ID: Summary\`, with each one separated by **two new lines**. Ensure there are no unnecessary HTML tags or triple backticks in your response. Never put two summaries in the same line.
 
   **Examples:**
 
-  #id-abcde: A brief summary of the content within <details id="id-abcde">...</details>.
+  #a-h2-header: A brief summary of the content within <h2 id="a-h2-header">...</h2>.
 
-  #id-12345: Summary of id-12345. Refer to <a href="#a-header">A Header</a>.
+  #a-h3-header: Summary of #a-h3-header. Refer to <a href="#another-header">Another Header</a>.
   `
 
-  const content = html.innerHTML;
+  function compress(html) {
+    let key = html.tagName;
+    if (key.match(/^H[1-6]$/)) {
+      return `<${key} id="${html.id}">${html.textContent}</${key}>`;
+    } if (html.children.length) {
+      return Array.from(html.children).map(compress).join('');
+    } else {
+      return html.textContent;
+    }
+  }
+
+  const content = compress(html);
 
   const fillSummary = (output, done) => {
     // output = output.replace(/\s*```\s*[a-z]*\s*/g, '');
@@ -37,7 +48,7 @@ async function generateSummaries(html) {
     while (i < splits.length - !done) {
       if (!splits[i].trim()) break;
       try {
-        const [_, id, txt] = splits[i].match(/\s*#(id-\w+): ([\s\S]+)/m)
+        const [_, id, txt] = splits[i].match(/\s*#((?:\w|-)+): ([\s\S]+(?!\n#))/m)
         const d = document.getElementById(id);
         if (d) {
           writeSummary(d, txt);
@@ -46,7 +57,7 @@ async function generateSummaries(html) {
         }
         i += 1;
       } catch (error) {
-        console.error('Invalid format:', splits[i]);
+        console.error('Invalid format:', error, splits[i]);
         break;
       }
     }
@@ -58,16 +69,22 @@ async function generateSummaries(html) {
   await getAIResponse(content, prompt, fillSummary);
 };
 
-function writeSummary(details, txt) {
-  const summary = details.querySelector('summary');
+function writeSummary(header, txt) {
+  const summary = header.parentElement;
 
-  if (summary.querySelector('p')) {
+  if (summary.querySelector('p')) {  // only keep the header
     summary.innerHTML = summary.firstChild.outerHTML;
   }
-  
+
   p = document.createElement('p');
   summary.appendChild(p);
-  p.innerHTML = txt.trim();
+  
+  chrome.runtime.sendMessage(
+    { message: 'markdown', markdown: txt.trim() },
+    (res) => {
+      p.innerHTML = res.html || txt.trim();
+    }
+  );
 
   const qa = document.createElement('div');
   qa.className = 'ai-qa';
@@ -91,17 +108,25 @@ function writeSummary(details, txt) {
         // remove all siblings following the input
         while (input.previousElementSibling)
           input.previousElementSibling.remove();
+        if (qa.querySelector('p'))
+          qa.querySelector('p').remove();
 
         const question = input.value.trim();
         const prompt = `Write a short answer given the following information:
-          ${details.textContent}`;
+          ${header.textContent}`;
 
         const ans = document.createElement('p');
         qa.insertBefore(ans, input.nextElementSibling);
 
         await getAIResponse(question, prompt,
           (output, _) => {
-            return ans.innerHTML = output;
+            chrome.runtime.sendMessage(
+              { message: 'markdown', markdown: output },
+              (res) => {
+                ans.innerHTML = res.html || output;
+              }
+            );
+            return output;
           });
 
         createInput();
@@ -142,8 +167,8 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
     });
   });
 
-  console.warn('Generation started.\nQuery:', text.slice(0, 300),
-    '\nPrompt:', prompt.slice(0, 500));
+  // console.warn('Generation started.\nQuery:', text.slice(0, 500),
+  //   '\nPrompt:', prompt.slice(0, 500));
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -168,7 +193,6 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
 
     const chunk = decoder.decode(value);
     const lines = chunk.split(/data: (?=[{[])/)
-      .map((line) => line.trim())
       .filter((line) => line !== "" && line !== "[DONE]");
 
     for (const line of lines) {
@@ -202,10 +226,6 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
     const summary = document.createElement('summary');
     details.appendChild(summary);
 
-    if (header.tagName <= 'H3') {
-      details.id = 'id-' + Math.random().toString(36).substring(2, 7);
-    }
-
     const div = document.createElement('div');
     div.classList.add('foldable', header.tagName.toLowerCase());
     details.appendChild(div);
@@ -227,7 +247,7 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
       !scrollLock && focusOnDetails(details);
     });
   })
-  
+
   focusOnDetails(document.querySelector('details'));
 }
 
@@ -263,7 +283,7 @@ var focusOnDetails = (details) => {
   // keep the top of the section at the same position
   var dy = 0;
   if ((!focusedDetails || rect2.top < rect1.top) &&
-       details.firstChild.firstChild.tagName === 'H2') {
+    details.firstChild.firstChild.tagName === 'H2') {
     dy += Math.min(rect2.top, rect2.height) - 10;
   }
   // else if (rect2.bottom > window.innerHeight) {
