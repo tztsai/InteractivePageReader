@@ -3,9 +3,7 @@ coverage/
 node_modules/
 package-lock.json
 
-/themes/
 /vendor/
 /*.zip
 /*.pem
-/background/index-compilers.js
 .DS_Store
