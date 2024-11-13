@@ -53,7 +53,7 @@
   "commands": {
     "md-wise": {
       "suggested_key": {
-        "default": "Ctrl+K"
+        "default": "Ctrl+M"
       },
       "description": "Convert Web Page to Interactive Markdown",
       "global": true

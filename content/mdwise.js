@@ -2,7 +2,8 @@ function cleanHtml() {
   if (main = document.querySelector('main')) {
     document.body.innerHTML = main.innerHTML;
   }
-  if (articles = document.querySelectorAll('article')) {
+  let articles = document.querySelectorAll('article');
+  if (articles.length) {
     document.body.innerHTML = '';
     for (e of articles) {
       if (e.textContent.trim().length > 20) {
@@ -13,7 +14,6 @@ function cleanHtml() {
   document.querySelectorAll(
     'link, style, script, meta, noscript, header, nav, span, footer, figure, table'
   ).forEach(e => e.remove());
-  
 }
 
 async function generateSummaries(html) {
