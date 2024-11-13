@@ -80,7 +80,7 @@ function writeSummary(details, txt) {
     qa.insertAdjacentElement('afterbegin', input);
 
     input.addEventListener('keydown', async (e) => {
-      console.warn(JSON.stringify(e));
+      scrollLock = true;
 
       e.stopPropagation();
       if (e.key === ' ') {
@@ -106,6 +106,7 @@ function writeSummary(details, txt) {
 
         createInput();
         update();  // render the new content
+        scrollLock = false;
       }
     });
     return input;
@@ -115,6 +116,7 @@ function writeSummary(details, txt) {
     qa.style.display = 'block';
   });
   summary.addEventListener('mouseleave', () => {
+    if (scrollLock) return;
     qa.style.display = 'none';
   });
   createInput();
