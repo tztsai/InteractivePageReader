@@ -48,7 +48,8 @@ async function generateSummaries(html) {
     while (i < splits.length - !done) {
       if (!splits[i].trim()) break;
       try {
-        const [_, id, txt] = splits[i].match(/\s*#((?:\w|-)+): ([\s\S]+(?!\n#))/m)
+        const [_, id, txt] = splits[i].match(/\s*#((?:\w|-)+): ([\s\S]+)/m)
+        if (txt.search(/^#/) !== -1) return output;
         const d = document.getElementById(id);
         if (d) {
           writeSummary(d, txt);
@@ -193,7 +194,7 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
 
     const chunk = decoder.decode(value);
     const lines = chunk.split(/data: (?=[{[])/)
-      .filter((line) => line !== "" && line !== "[DONE]");
+      .filter((line) => line.trim() && line.trim() !== "[DONE]");
 
     for (const line of lines) {
       buf += line;
@@ -351,41 +352,41 @@ function makeAIButton() {
   const btn = document.createElement('button');
   btn.id = 'ai-summary-btn';
   btn.innerText = 'AI Summary';
+  btn.classList.add('hidden');
 
-  btn.onclick = () => {
-    generateSummaries(document.getElementById('_html'));
-  };
+  btn.onmousedown = (event) => {
+    event.preventDefault();
 
-  btn.onmousedown = (e) => {
-    e.preventDefault();
+    const startTime = Date.now();
+
+    btn.onclick = () => {
+      if (Date.now() - startTime < 100) {
+        generateSummaries(document.getElementById('_html'));
+      }
+    };
+
+    let shiftX = event.clientX - btn.getBoundingClientRect().left;
+    let shiftY = event.clientY - btn.getBoundingClientRect().top;
+
+    function moveAt(pageX, pageY) {
+      btn.style.left = pageX - shiftX + 'px';
+      btn.style.top = pageY - shiftY + 'px';
+    }
+
+    function onMouseMove(event) {
+      moveAt(event.pageX, event.pageY);
+    }
+
     document.addEventListener('mousemove', onMouseMove);
-    
+
     btn.onmouseup = () => {
       document.removeEventListener('mousemove', onMouseMove);
       btn.onmouseup = null;
     };
   };
 
-  function onMouseMove(e) {
-    let shiftX = e.clientX - btn.getBoundingClientRect().left;
-    let shiftY = e.clientY - btn.getBoundingClientRect().top;
-    
-    let newX = e.pageX - shiftX;
-    let newY = e.pageY - shiftY;
-
-    // Ensure the button stays within the viewport
-    const rightEdge = document.documentElement.clientWidth - btn.offsetWidth;
-    const bottomEdge = document.documentElement.clientHeight - btn.offsetHeight;
-
-    if (newX < 0) newX = 0;
-    if (newY < 0) newY = 0;
-    if (newX > rightEdge) newX = rightEdge;
-    if (newY > bottomEdge) newY = bottomEdge;
-
-    btn.style.left = newX + 'px';
-    btn.style.top = newY + 'px';
-  }
-
   btn.ondragstart = () => false;
+
   document.body.appendChild(btn);
+  setTimeout(() => btn.classList.remove('hidden'), 100);
 }
