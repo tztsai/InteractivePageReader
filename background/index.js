@@ -2,7 +2,7 @@ importScripts('/vendor/markdown-it.min.js')
 importScripts('/vendor/marked.min.js')
 importScripts('/vendor/remark.min.js')
 importScripts('/vendor/turndown.min.js')
-importScripts('/vendor/readability.min.js')
+// importScripts('/vendor/readability.min.js')
 importScripts('/background/compilers/markdown-it.js')
 importScripts('/background/compilers/marked.js')
 importScripts('/background/compilers/remark.js')
@@ -35,10 +35,6 @@ importScripts('/background/icon.js')
 
   chrome.tabs.onUpdated.addListener(detect.tab)
   chrome.runtime.onMessage.addListener(messages)
-
-  var mdWise = (tab) => {
-    inject(tab.id);
-  }
   
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
@@ -49,13 +45,13 @@ importScripts('/background/icon.js')
   });
   
   chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "md-wise") mdWise(tab);
+    if (info.menuItemId === "md-wise") inject(tab.id);
   });
 
   chrome.commands.onCommand.addListener((command) => {
     if (command === "md-wise") {
       chrome.tabs.query({active: true, currentWindow: true}, ([tab]) => {
-        if (tab) mdWise(tab);
+        if (tab) inject(tab.id);
       });
     }
   });

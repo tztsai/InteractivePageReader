@@ -28,4 +28,5 @@ document.querySelector('.nav').addEventListener('click', (e) => {
   else if (e.target.innerText === 'Help') {
     window.location = 'https://github.com/simov/markdown-viewer#table-of-contents'
   }
+  document.querySelector('m-btn-all').click()
 })

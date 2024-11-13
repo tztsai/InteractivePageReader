@@ -46,13 +46,14 @@
     "storage",
     "scripting",
     "contextMenus",
-    "commands"
+    "commands",
+    "tabs"
   ],
 
   "commands": {
     "md-wise": {
       "suggested_key": {
-        "default": "Ctrl+Alt+A"
+        "default": "Ctrl+M"
       },
       "description": "Convert Web Page to Interactive Markdown",
       "global": true
