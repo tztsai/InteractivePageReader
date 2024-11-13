@@ -144,7 +144,7 @@ var Popup = () => {
     },
 
     apiKeyChange: (e) => {
-      state.apiKey = e.target.value;
+      state.apiKey = e.target.value.trim();
       chrome.storage.local.set({ openaiApiKey: state.apiKey });
     },
   }

@@ -74,6 +74,27 @@ div.ai-qa {
   }
 }
 
+#ai-summary-btn {
+  position: fixed;
+  bottom: 40px;
+  right: 80px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  width: 160px;
+  height: 50px;
+  font-size: 17px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: display 3s ease;
+}
+
+#ai-summary-btn:hover {
+  background-color: #0056b3;
+}
+
 #_html,
 #_toc {
   word-wrap: break-word;

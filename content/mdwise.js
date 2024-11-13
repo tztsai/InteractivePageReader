@@ -61,9 +61,13 @@ async function generateSummaries(html) {
 function writeSummary(details, txt) {
   const summary = details.querySelector('summary');
 
-  const p = document.createElement('p');
-  p.textContent = txt.trim();
+  if (summary.querySelector('p')) {
+    summary.innerHTML = summary.firstChild.outerHTML;
+  }
+  
+  p = document.createElement('p');
   summary.appendChild(p);
+  p.innerHTML = txt.trim();
 
   const qa = document.createElement('div');
   qa.className = 'ai-qa';
@@ -97,7 +101,7 @@ function writeSummary(details, txt) {
 
         await getAIResponse(question, prompt,
           (output, _) => {
-            return ans.textContent = output;
+            return ans.innerHTML = output;
           });
 
         createInput();
@@ -220,7 +224,9 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
     header.addEventListener('mouseenter', () => {
       !scrollLock && focusOnDetails(details);
     });
-  });
+  })
+  
+  focusOnDetails(document.querySelector('details'));
 }
 
 var focusedDetails;
@@ -248,7 +254,7 @@ var focusOnDetails = (details) => {
     if (p.tagName === 'DETAILS') p.open = true;
   }
 
-  setTimeout(() => { scrollLock = false; }, 500);
+  setTimeout(() => { scrollLock = false; }, 200);
 
   const rect2 = details.getBoundingClientRect();
 
@@ -317,4 +323,61 @@ function findPrev(elm) {
   }
 
   return null;
+}
+
+function makeAIButton() {
+  const btn = document.createElement('button');
+  btn.id = 'ai-summary-btn';
+  btn.innerText = 'AI Summary';
+  btn.style.position = 'fixed';
+  btn.style.bottom = '20px';
+  btn.style.right = '20px';
+  btn.style.zIndex = '1000';
+  btn.style.backgroundColor = '#007bff';
+  btn.style.color = 'white';
+  btn.style.border = 'none';
+  btn.style.padding = '10px 20px';
+  btn.style.borderRadius = '5px';
+  btn.style.cursor = 'pointer';
+
+  btn.onclick = () => {
+    generateSummaries(document.getElementById('_html'));
+  };
+
+  btn.onmousedown = (e) => {
+    e.preventDefault();
+    let shiftX = e.clientX - btn.getBoundingClientRect().left;
+    let shiftY = e.clientY - btn.getBoundingClientRect().top;
+
+    function moveAt(pageX, pageY) {
+      let newX = pageX - shiftX;
+      let newY = pageY - shiftY;
+
+      // Ensure the button stays within the viewport
+      const rightEdge = document.documentElement.clientWidth - btn.offsetWidth;
+      const bottomEdge = document.documentElement.clientHeight - btn.offsetHeight;
+
+      if (newX < 0) newX = 0;
+      if (newY < 0) newY = 0;
+      if (newX > rightEdge) newX = rightEdge;
+      if (newY > bottomEdge) newY = bottomEdge;
+
+      btn.style.left = newX + 'px';
+      btn.style.top = newY + 'px';
+    }
+
+    function onMouseMove(e) {
+      moveAt(e.pageX, e.pageY);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+
+    btn.onmouseup = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      btn.onmouseup = null;
+    };
+  };
+
+  btn.ondragstart = () => false;
+  document.body.appendChild(btn);
 }

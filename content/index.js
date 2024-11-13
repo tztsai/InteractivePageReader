@@ -127,15 +127,12 @@ var update = (update) => {
   setTimeout(() => {
     // remove all elements before the first header
     for (s = document.querySelector('h1')?.previousElementSibling;
-      s; s = s.previousElementSibling) s.remove();
-
+         s; s = s.previousElementSibling) s.remove();
     // add details & summary tags to each section separated by headers
     makeFoldable();
-
-    // convert the markdown content to text
-    if (state.content.ai)
-      generateSummaries(document.getElementById('_html'));
-  }, 100)
+    // add a button to trigger AI summarization
+    if (state.content.ai) makeAIButton();
+  }, 80)
 }
 
 var render = (md) => {
