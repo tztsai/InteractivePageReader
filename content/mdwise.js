@@ -123,7 +123,7 @@ function writeSummary(header, txt) {
             chrome.runtime.sendMessage(
               { message: 'markdown', markdown: output },
               (res) => {
-                ans.innerHTML = res.html || output;
+                ans.innerHTML = res.html.innerHTML || output;
               }
             );
             return output;

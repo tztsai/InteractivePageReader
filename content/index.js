@@ -292,7 +292,7 @@ var _escape = (str) =>
   }[tag] || tag))
 
 
-if (!document.querySelector('pre')) {
+if (!window.location.pathname.endsWith('.md')) {
   // clean the HTML content
   cleanHtml();
   // convert the HTML content to markdown
