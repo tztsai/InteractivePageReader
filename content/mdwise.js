@@ -351,16 +351,6 @@ function makeAIButton() {
   const btn = document.createElement('button');
   btn.id = 'ai-summary-btn';
   btn.innerText = 'AI Summary';
-  btn.style.position = 'fixed';
-  btn.style.bottom = '20px';
-  btn.style.right = '20px';
-  btn.style.zIndex = '1000';
-  btn.style.backgroundColor = '#007bff';
-  btn.style.color = 'white';
-  btn.style.border = 'none';
-  btn.style.padding = '10px 20px';
-  btn.style.borderRadius = '5px';
-  btn.style.cursor = 'pointer';
 
   btn.onclick = () => {
     generateSummaries(document.getElementById('_html'));
@@ -368,37 +358,33 @@ function makeAIButton() {
 
   btn.onmousedown = (e) => {
     e.preventDefault();
-    let shiftX = e.clientX - btn.getBoundingClientRect().left;
-    let shiftY = e.clientY - btn.getBoundingClientRect().top;
-
-    function moveAt(pageX, pageY) {
-      let newX = pageX - shiftX;
-      let newY = pageY - shiftY;
-
-      // Ensure the button stays within the viewport
-      const rightEdge = document.documentElement.clientWidth - btn.offsetWidth;
-      const bottomEdge = document.documentElement.clientHeight - btn.offsetHeight;
-
-      if (newX < 0) newX = 0;
-      if (newY < 0) newY = 0;
-      if (newX > rightEdge) newX = rightEdge;
-      if (newY > bottomEdge) newY = bottomEdge;
-
-      btn.style.left = newX + 'px';
-      btn.style.top = newY + 'px';
-    }
-
-    function onMouseMove(e) {
-      moveAt(e.pageX, e.pageY);
-    }
-
     document.addEventListener('mousemove', onMouseMove);
-
+    
     btn.onmouseup = () => {
       document.removeEventListener('mousemove', onMouseMove);
       btn.onmouseup = null;
     };
   };
+
+  function onMouseMove(e) {
+    let shiftX = e.clientX - btn.getBoundingClientRect().left;
+    let shiftY = e.clientY - btn.getBoundingClientRect().top;
+    
+    let newX = e.pageX - shiftX;
+    let newY = e.pageY - shiftY;
+
+    // Ensure the button stays within the viewport
+    const rightEdge = document.documentElement.clientWidth - btn.offsetWidth;
+    const bottomEdge = document.documentElement.clientHeight - btn.offsetHeight;
+
+    if (newX < 0) newX = 0;
+    if (newY < 0) newY = 0;
+    if (newX > rightEdge) newX = rightEdge;
+    if (newY > bottomEdge) newY = bottomEdge;
+
+    btn.style.left = newX + 'px';
+    btn.style.top = newY + 'px';
+  }
 
   btn.ondragstart = () => false;
   document.body.appendChild(btn);
