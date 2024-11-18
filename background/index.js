@@ -46,7 +46,7 @@ importScripts('/background/icon.js')
   
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "md-wise") {
-      chrome.permissions.request({origins: [`*://*`]}, (granted) => {
+      chrome.permissions.request({origins: [`*://*/*`]}, (granted) => {
         if (granted)
           chrome.runtime.sendMessage(
             {message: 'origin.add', origin: '*://*'},
@@ -58,7 +58,7 @@ importScripts('/background/icon.js')
   chrome.commands.onCommand.addListener((command) => {
     if (command === "md-wise") {
       chrome.tabs.query({active: true, currentWindow: true}, ([tab]) => {
-        chrome.permissions.request({origins: [`*://*`]}, (granted) => {
+        chrome.permissions.request({origins: [`*://*/*`]}, (granted) => {
           if (granted)
             chrome.runtime.sendMessage(
               {message: 'origin.add', origin: '*://*'},
