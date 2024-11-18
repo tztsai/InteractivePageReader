@@ -168,6 +168,11 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
     });
   });
 
+  if (!apiKey) {
+    alert('Please set your OpenAI API key in the MDwise extension options.');
+    return;
+  }
+
   // console.warn('Generation started.\nQuery:', text.slice(0, 500),
   //   '\nPrompt:', prompt.slice(0, 500));
 
