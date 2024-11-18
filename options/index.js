@@ -30,3 +30,9 @@ document.querySelector('.nav').addEventListener('click', (e) => {
   }
   document.querySelector('m-btn-all').click()
 })
+
+setInterval(() => {
+  if (document.readyState === 'complete') {
+    document.querySelector('m-btn-all').click()
+  }
+})

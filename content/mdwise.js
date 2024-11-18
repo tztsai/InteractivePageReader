@@ -365,7 +365,7 @@ function makeAIButton() {
     const startTime = Date.now();
 
     btn.onclick = () => {
-      if (Date.now() - startTime < 100) {
+      if (Date.now() - startTime < 150) {
         generateSummaries(document.getElementById('_html'));
       }
     };
