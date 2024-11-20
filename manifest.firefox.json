@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name"            : "MDwise Page Reader",
   "version"         : "1.0",
-  "description"     : "Dark Mode • Themes • Autoreload • Mermaid Diagrams • MathJax • ToC • Syntax Highlighting",
+  "description"     : "MDwise Page Reader converts web pages into interactive markdown format, and uses AI to provide section-wise summaries and Q&A.",
 
-  "homepage_url": "https://github.com/simov/markdown-viewer",
+  "homepage_url": "https://github.com/tztsai/InteractivePageReader",
 
   "icons": {
     "96" : "/icons/default/favicon-96x96.png"
@@ -68,15 +68,14 @@
     "storage",
     "scripting",
     "contextMenus",
-    "tabs",
-    "commands"
+    "commands",
+    "tabs"
   ],
 
   "commands": {
-    "convert-to-markdown": {
+    "md-wise": {
       "suggested_key": {
-        "default": "Ctrl+M",
-        "mac": "MacCtrl+M"
+        "default": "Ctrl+M"
       },
       "description": "Convert Web Page to Interactive Markdown",
       "global": true

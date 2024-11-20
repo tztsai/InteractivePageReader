@@ -4,7 +4,7 @@
   "version"         : "1.0",
   "description"     : "MDwise Page Reader converts web pages into interactive markdown format, and uses AI to provide section-wise summaries and Q&A.",
 
-  "homepage_url": "https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk",
+  "homepage_url": "https://github.com/tztsai/InteractivePageReader",
 
   "icons": {
     "96" : "/icons/default/favicon-96x96.png"
