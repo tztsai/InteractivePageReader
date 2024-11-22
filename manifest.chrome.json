@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name"            : "MDwise Page Reader",
   "version"         : "1.1",
-  "description"     : "MDwise Page Reader converts web pages into interactive markdown format with foldable sections, and offers section-wise AI summaries and Q&A.",
+  "description"     : "MDwise Page Reader converts web pages into interactive markdown format with foldable sections and offers AI summaries and Q&A.",
 
   "homepage_url": "https://github.com/tztsai/InteractivePageReader",
 
