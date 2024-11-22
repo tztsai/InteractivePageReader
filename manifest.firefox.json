@@ -68,19 +68,8 @@
     "storage",
     "scripting",
     "contextMenus",
-    "commands",
     "tabs"
   ],
-
-  "commands": {
-    "md-wise": {
-      "suggested_key": {
-        "default": "Ctrl+M"
-      },
-      "description": "Convert Web Page to Interactive Markdown",
-      "global": true
-    }
-  },
 
   "host_permissions": [
     "file:///*"
