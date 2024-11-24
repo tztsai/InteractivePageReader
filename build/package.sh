@@ -35,6 +35,9 @@ sh prism/build.sh
 sh remark/build.sh
 sh themes/build.sh $browser
 sh turndown/build.sh
+sh domino/build.sh
+sh readability/build.sh
+sh webextension-polyfill/build.sh
 
 # copy files
 mkdir -p tmp

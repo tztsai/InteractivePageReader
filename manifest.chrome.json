@@ -61,7 +61,9 @@
   },
 
   "host_permissions": [
-    "file:///*"
+    "file:///*",
+    "https://*/*",
+    "http://*/*"
   ],
 
   "optional_host_permissions": [
