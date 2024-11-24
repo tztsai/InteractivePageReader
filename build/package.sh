@@ -11,33 +11,33 @@ if [ -z "$browser" ]; then
   exit 1
 fi
 
-# set current working directory to directory of the shell script
-cd "$(dirname "$0")"
+# # set current working directory to directory of the shell script
+# cd "$(dirname "$0")"
 
-# cleanup
-rm -rf ../themes
-rm -rf ../vendor
-rm -f ../markdown-viewer.zip
-mkdir -p ../themes
-mkdir -p ../vendor
+# # cleanup
+# rm -rf ../themes
+# rm -rf ../vendor
+# rm -f ../markdown-viewer.zip
+# mkdir -p ../themes
+# mkdir -p ../vendor
 
-# build deps
-sh bootstrap/build.sh
-sh csso/build.sh
-sh markdown-it/build.sh
-sh marked/build.sh
-sh mathjax/build.sh
-sh mdc/build.sh
-sh mermaid/build.sh
-sh mithril/build.sh
-sh panzoom/build.sh
-sh prism/build.sh
-sh remark/build.sh
-sh themes/build.sh $browser
-sh turndown/build.sh
-sh domino/build.sh
-sh readability/build.sh
-sh webextension-polyfill/build.sh
+# # build deps
+# sh bootstrap/build.sh
+# sh csso/build.sh
+# sh markdown-it/build.sh
+# sh marked/build.sh
+# sh mathjax/build.sh
+# sh mdc/build.sh
+# sh mermaid/build.sh
+# sh mithril/build.sh
+# sh panzoom/build.sh
+# sh prism/build.sh
+# sh remark/build.sh
+# sh themes/build.sh $browser
+# sh turndown/build.sh
+# sh domino/build.sh
+# sh readability/build.sh
+# sh webextension-polyfill/build.sh
 
 # copy files
 mkdir -p tmp
@@ -57,13 +57,13 @@ fi
 # archive the markdown-viewer folder itself
 if [ "$browser" = "chrome" ]; then
   cd build/tmp/
-  zip -r ../../markdown-viewer.zip markdown-viewer
+  zip -r ../../markdown-viewer.zip InteractivePageReader
   cd ..
 # archive the contents of the markdown-viewer folder
 elif [ "$browser" = "firefox" ]; then
   cd build/tmp/markdown-viewer/
   zip -r ../../../markdown-viewer.zip .
-  cd ../../
+  cd ..
 fi
 
 # cleanup

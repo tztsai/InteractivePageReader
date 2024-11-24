@@ -84,8 +84,8 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "markdown-viewer@outofindex.com",
-      "strict_min_version": "110.0"
+      "id": "mdwise-reader@outofindex.com",
+      "strict_min_version": "1.0"
     }
   }
 }

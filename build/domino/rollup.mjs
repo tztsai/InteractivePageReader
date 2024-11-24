@@ -6,7 +6,8 @@ export default {
   output: {
     file: 'tmp/domino.js',
     format: 'umd',
-    name: 'domino'
+    name: 'domino',
+    globals: { 'domino': 'domino' }
   },
   plugins: [
     commonjs(),
