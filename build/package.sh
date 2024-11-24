@@ -63,7 +63,7 @@ if [ "$browser" = "chrome" ]; then
 elif [ "$browser" = "firefox" ]; then
   cd build/tmp/markdown-viewer/
   zip -r ../../../markdown-viewer.zip .
-  cd ..
+  cd ../..
 fi
 
 # cleanup
