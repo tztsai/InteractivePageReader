@@ -19,32 +19,10 @@
   },
 
   "background" : {
-    "scripts": [
-      "/vendor/markdown-it.min.js",
-      "/vendor/marked.min.js",
-      "/vendor/remark.min.js",
-
-      "/background/compilers/markdown-it.js",
-      "/background/compilers/marked.js",
-      "/background/compilers/remark.js",
-
-      "/background/storage.js",
-      "/background/webrequest.js",
-      "/background/detect.js",
-      "/background/inject.js",
-      "/background/messages.js",
-      "/background/mathjax.js",
-      "/background/xhr.js",
-      "/background/icon.js",
-
-      "/background/index.js"
-    ]
+    "service_worker": "/background/index.js"
   },
 
-  "options_ui": {
-    "page": "/options/index.html",
-    "browser_style": false
-  },
+  "options_page": "/options/index.html",
 
   "web_accessible_resources": [
     {
@@ -68,8 +46,19 @@
     "storage",
     "scripting",
     "contextMenus",
+    "commands",
     "tabs"
   ],
+
+  "commands": {
+    "md-wise": {
+      "suggested_key": {
+        "default": "Ctrl+M"
+      },
+      "description": "Convert Web Page to Interactive Markdown",
+      "global": true
+    }
+  },
 
   "host_permissions": [
     "file:///*",
@@ -77,15 +66,7 @@
     "http://*/*"
   ],
 
-  "optional_permissions": [
-    "webRequest",
+  "optional_host_permissions": [
     "*://*/"
-  ],
-
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "mdwise-reader@outofindex.com",
-      "strict_min_version": "100.0"
-    }
-  }
+  ]
 }

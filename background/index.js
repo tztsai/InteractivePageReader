@@ -39,7 +39,7 @@ importScripts('/background/icon.js')
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
       id: "md-wise",
-      title: "Assist Me To Read",
+      title: "AI Interactive Reader",
       contexts: ["page"]
     });
   });
