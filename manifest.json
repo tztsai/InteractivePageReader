@@ -46,8 +46,7 @@
     "storage",
     "scripting",
     "contextMenus",
-    "commands",
-    "tabs"
+    "commands"
   ],
 
   "commands": {

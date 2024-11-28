@@ -11,8 +11,8 @@ if [ -z "$browser" ]; then
   exit 1
 fi
 
-# # set current working directory to directory of the shell script
-# cd "$(dirname "$0")"
+# set current working directory to directory of the shell script
+cd "$(dirname "$0")"
 
 # cleanup
 rm -rf ../themes

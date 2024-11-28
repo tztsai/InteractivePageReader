@@ -359,39 +359,39 @@ function makeAIButton() {
   btn.innerText = 'AI Summary';
   btn.classList.add('hidden');
 
-  btn.onmousedown = (event) => {
-    event.preventDefault();
+  // btn.onmousedown = (event) => {
+  //   event.preventDefault();
 
-    const startTime = Date.now();
+  //   const startTime = Date.now();
 
-    btn.onclick = () => {
-      if (Date.now() - startTime < 150) {
-        generateSummaries(document.getElementById('_html'));
-      }
-    };
+  //   btn.onclick = () => {
+  //     if (Date.now() - startTime < 150) {
+  //       generateSummaries(document.getElementById('_html'));
+  //     }
+  //   };
 
-    let shiftX = event.clientX - btn.getBoundingClientRect().left;
-    let shiftY = event.clientY - btn.getBoundingClientRect().top;
+  //   let shiftX = event.clientX - btn.getBoundingClientRect().left;
+  //   let shiftY = event.clientY - btn.getBoundingClientRect().top;
 
-    function moveAt(pageX, pageY) {
-      btn.style.left = pageX - shiftX + 'px';
-      btn.style.top = pageY - shiftY + 'px';
-    }
+  //   function moveAt(pageX, pageY) {
+  //     btn.style.left = pageX - shiftX + 'px';
+  //     btn.style.top = pageY - shiftY + 'px';
+  //   }
 
-    function onMouseMove(event) {
-      moveAt(event.pageX, event.pageY);
-    }
+  //   function onMouseMove(event) {
+  //     moveAt(event.pageX, event.pageY);
+  //   }
 
-    document.addEventListener('mousemove', onMouseMove);
+  //   document.addEventListener('mousemove', onMouseMove);
 
-    btn.onmouseup = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      btn.onmouseup = null;
-    };
-  };
+  //   btn.onmouseup = () => {
+  //     document.removeEventListener('mousemove', onMouseMove);
+  //     btn.onmouseup = null;
+  //   };
+  // };
 
-  btn.ondragstart = () => false;
+  // btn.ondragstart = () => false;
 
   document.body.appendChild(btn);
-  setTimeout(() => btn.classList.remove('hidden'), 100);
+  setTimeout(() => btn.classList.remove('hidden'), 200);
 }
