@@ -98,7 +98,7 @@ function writeSummary(header, txt) {
     qa.insertAdjacentElement('afterbegin', input);
 
     input.addEventListener('keydown', async (e) => {
-      scrollLock = true;
+      generated = true;
 
       e.stopPropagation();
       if (e.key === ' ') {
@@ -109,8 +109,8 @@ function writeSummary(header, txt) {
         // remove all siblings following the input
         while (input.previousElementSibling)
           input.previousElementSibling.remove();
-        if (qa.querySelector('p'))
-          qa.querySelector('p').remove();
+        if (input.nextElementSibling?.tagName === 'P')
+          input.nextElementSibling.remove();
 
         const question = input.value.trim();
         const prompt = `Write a short answer given the following information:
@@ -132,17 +132,18 @@ function writeSummary(header, txt) {
 
         createInput();
         update();  // render the new content
-        scrollLock = false;
       }
     });
     return input;
   }
 
+  var generated = false;
+
   summary.addEventListener('mouseenter', () => {
     qa.style.display = 'block';
   });
   summary.addEventListener('mouseleave', () => {
-    if (scrollLock) return;
+    if (generated) return;
     qa.style.display = 'none';
   });
   createInput();
@@ -276,6 +277,7 @@ var focusOnDetails = (details) => {
   const rect1 = details.getBoundingClientRect();
   while (focusedDetails && !focusedDetails.contains(details)) {
     focusedDetails.open = false;
+    focusedDetails.querySelector('.ai-qa').style.display = 'none';
     focusedDetails = focusedDetails.parentElement.closest('details');
   }
   for (p = details.parentElement; p.tagName !== 'BODY'; p = p.parentElement) {
@@ -359,16 +361,16 @@ function makeAIButton() {
   btn.innerText = 'AI Summary';
   btn.classList.add('hidden');
 
-  // btn.onmousedown = (event) => {
-  //   event.preventDefault();
+  btn.onmousedown = (event) => {
+    event.preventDefault();
 
-  //   const startTime = Date.now();
+    const startTime = Date.now();
 
-  //   btn.onclick = () => {
-  //     if (Date.now() - startTime < 150) {
-  //       generateSummaries(document.getElementById('_html'));
-  //     }
-  //   };
+    btn.onclick = () => {
+      if (Date.now() - startTime < 200) {
+        generateSummaries(document.getElementById('_html'));
+      }
+    };
 
   //   let shiftX = event.clientX - btn.getBoundingClientRect().left;
   //   let shiftY = event.clientY - btn.getBoundingClientRect().top;
@@ -388,7 +390,7 @@ function makeAIButton() {
   //     document.removeEventListener('mousemove', onMouseMove);
   //     btn.onmouseup = null;
   //   };
-  // };
+  };
 
   // btn.ondragstart = () => false;
 
