@@ -174,9 +174,6 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
     return;
   }
 
-  // console.warn('Generation started.\nQuery:', text.slice(0, 500),
-  //   '\nPrompt:', prompt.slice(0, 500));
-
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -210,7 +207,7 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
         if (content) output += content;
         buf = '';
       } catch (error) {
-        // console.warn('Error parsing JSON:', error);
+        console.warn('Error parsing JSON:', error);
       }
     }
   }
@@ -261,7 +258,7 @@ var makeFoldable = (selector = 'h1, h2, h3, h4, h5') => {
 var focusedDetails;
 var scrollLock = false;
 
-var focusOnDetails = (details) => {
+function focusOnDetails(details) {
   if (
     scrollLock && focusedDetails
     && findNext(details) !== focusedDetails
@@ -276,8 +273,8 @@ var focusOnDetails = (details) => {
 
   const rect1 = details.getBoundingClientRect();
   while (focusedDetails && !focusedDetails.contains(details)) {
+    focusedDetails.querySelector('.ai-qa')?.style.display = 'none';
     focusedDetails.open = false;
-    focusedDetails.querySelector('.ai-qa').style.display = 'none';
     focusedDetails = focusedDetails.parentElement.closest('details');
   }
   for (p = details.parentElement; p.tagName !== 'BODY'; p = p.parentElement) {
@@ -371,28 +368,7 @@ function makeAIButton() {
         generateSummaries(document.getElementById('_html'));
       }
     };
-
-  //   let shiftX = event.clientX - btn.getBoundingClientRect().left;
-  //   let shiftY = event.clientY - btn.getBoundingClientRect().top;
-
-  //   function moveAt(pageX, pageY) {
-  //     btn.style.left = pageX - shiftX + 'px';
-  //     btn.style.top = pageY - shiftY + 'px';
-  //   }
-
-  //   function onMouseMove(event) {
-  //     moveAt(event.pageX, event.pageY);
-  //   }
-
-  //   document.addEventListener('mousemove', onMouseMove);
-
-  //   btn.onmouseup = () => {
-  //     document.removeEventListener('mousemove', onMouseMove);
-  //     btn.onmouseup = null;
-  //   };
   };
-
-  // btn.ondragstart = () => false;
 
   document.body.appendChild(btn);
   setTimeout(() => btn.classList.remove('hidden'), 200);
