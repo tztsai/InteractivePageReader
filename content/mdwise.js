@@ -273,7 +273,8 @@ function focusOnDetails(details) {
 
   const rect1 = details.getBoundingClientRect();
   while (focusedDetails && !focusedDetails.contains(details)) {
-    focusedDetails.querySelector('.ai-qa')?.style.display = 'none';
+    const qa = focusedDetails.querySelector('.ai-qa');
+    if (qa) qa.style.display = 'none';
     focusedDetails.open = false;
     focusedDetails = focusedDetails.parentElement.closest('details');
   }
