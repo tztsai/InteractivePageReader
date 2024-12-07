@@ -47,6 +47,7 @@ div.ai-qa {
   border: 2px solid #83a7cc;
   border-bottom: none;
   border-radius: 6px;
+  display: block;
 
   /* &:focus {
     outline: none;

@@ -216,6 +216,12 @@ async function getAIResponse(text, prompt, callback = (s, d) => s) {
     if (buf) console.error('Error parsing:', buf);
     clearInterval(interval);
     console.warn('Generation complete.');
+    // Ensure we maintain focus on the current details element
+    if (focusedDetails) {
+      scrollLock = true;
+      focusedDetails.open = true;
+      setTimeout(() => { scrollLock = false; }, 100);
+    }
   }, 1000);
 
   return output;
